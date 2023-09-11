@@ -1,0 +1,81 @@
+[
+    {
+        "name": "A Good Wig",
+        "units": [
+            {
+                "colour": "Blue",
+                "length_inches": 5,
+                "size": "Medium",
+                "price": 14.50,
+                "unit_stock_qty": 4,
+                "images": [
+                    {
+                        "p_id": "product-image",
+                        "url": "https://i5.walmartimages.com/asr/b36c7178-e192-434e-9848-974aba45c00b_1.afa2c90e0367dc5065551b4df337706e.jpeg"
+                    }
+                ]
+            },
+            {
+                "colour": "Green",
+                "length_inches": 15,
+                "size": "Medium",
+                "price": 23.00,
+                "unit_stock_qty": 8,
+                "images": [
+                    {
+                        "p_id": "another-product-image",
+                        "url": "https://images.unsplash.com/photo-1519421692594-d7a3f3e3fe5f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80"
+                    }
+                ]
+            },
+            {
+                "colour": "Black",
+                "length_inches": 8,
+                "size": "Medium",
+                "price": 8.00,
+                "unit_stock_qty": 20
+            }
+        ],
+        "info": "Lorem ipsum dolor, sit amet consectetur adipisicing elit."
+    },
+    {
+        "name": "Sweet & Sour",
+        "units": [
+            {
+                "colour": "Green",
+                "length_inches": 30,
+                "size": "Small",
+                "price": 20.00,
+                "unit_stock_qty": 3,
+                "images": [
+                    {
+                        "p_id": "product-image",
+                        "url": "https://s3-ap-southeast-1.amazonaws.com/dev.landber/c142f239-30d7-46fb-82a5-b2c3a1d9b201.png"
+                    }
+                ]
+            },
+            {
+                "colour": "Green",
+                "length_inches": 10,
+                "size": "Medium",
+                "price": 13.50,
+                "unit_stock_qty": 7
+            },
+            {
+                "colour": "Yellow",
+                "length_inches": 15,
+                "size": "Medium",
+                "price": 15.00,
+                "unit_stock_qty": 5
+            },
+            {
+                "colour": "Orange",
+                "length_inches": 10,
+                "size": "Medium",
+                "price": 13.00,
+                "unit_stock_qty": 10
+            }
+        ],
+        "info": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusamus quia fugiat quam, quisquam itaque aperiam ad nihil harum beatae illo atque commodi, eum nesciunt alias architecto consequuntur, reiciendis blanditiis repudiandae!"
+    }
+]
