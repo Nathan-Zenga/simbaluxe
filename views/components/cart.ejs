@@ -1,0 +1,57 @@
+<div id="cart">
+    <div id="cart-info-box">
+        <p><%= !cart.length ? "No items in your cart" : "" %></p>
+    </div>
+
+    <div id="cart-items">
+        <%_ cart.forEach(item => { _%>
+        <div class="cart-item product-item row no-gutters">
+            <%_ if (item.unit.main_image) { _%>
+            <img class="bg-layer" src="<%= item.unit.main_image.url %>" alt="background layer image">
+            <%_ } _%>
+
+            <div class="col-md-5 col-5">
+                <div class="img-wrapper <%= !item.unit.main_image ? 'no-image' : '' %>">
+                    <%_ const image_src = item.unit.main_image?.url || placeholder_product_image _%>
+                    <img class="img" src="<%= image_src %>" alt="cart item image">
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="info">
+                    <p class="name">
+                        <a href="<%= item.link %>"><%= item.name %></a>
+                    </p>
+                    <p class="description"><%= item.unit.unit_description %></p>
+                    <p class="price">£<%= item.unit.price.toFixed(2) %></p>
+
+                    <div class="options">
+                        <form class="qty-change-form" action="/shop/cart/change-quantity">
+                            <label for="product-quantity" class="sr-only">Quantity</label>
+                            <select class="custom-select product-quantity" name="quantity" required>
+                                <%_ for (var i = 1; i <= item.unit.unit_stock_qty; i++) {
+                                    const selected = i == item.quantity ? 'selected' : ''; _%>
+                                <option value="<%= i %>" <%- selected %>><%= i %></option>
+                                <%_ } _%>
+                            </select>
+                            <input type="hidden" name="id" value="<%= item.unit._id %>">
+                        </form>
+
+                        <form class="item-remove-form" action="/shop/cart/remove">
+                            <input type="hidden" name="id" value="<%= item.unit._id %>">
+                            <button type="submit" class="btn delete-btn">Remove</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <%_ }) _%>
+    </div>
+
+    <%_ if (cart.length) { _%>
+    <div id="cart-footer">
+        <p id="price-total">Total: <span>£<%= price_total().toFixed(2) %></span></p>
+        <p><a id="checkout-link" class="btn btn-theme" href="/shop/checkout" role="button">Checkout</a></p>
+    </div>
+    <%_ } _%>
+</div>

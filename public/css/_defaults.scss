@@ -1,0 +1,132 @@
+@import url('https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css');
+@import url('https://cdn.jsdelivr.net/gh/hung1001/font-awesome-pro@4cac1a6/css/all.css');
+@import url('https://fonts.googleapis.com/css2?family=Spartan:wght@200;300;500;600;700&family=Bodoni+Moda&family=Taprom&display=swap');
+
+@function color-primary   ($alpha: 100) { @return rgba(15, 15, 15, $alpha); }
+@function color-secondary ($alpha: 100) { @return rgba(25, 25, 25, $alpha); }
+@function color-tertiary  ($alpha: 100) { @return rgba(255, 211, 177, $alpha); }
+@function color-accent    ($alpha: 100) { @return rgba(190, 190, 190, $alpha); }
+
+$sm: 576px;
+$md: 768px;
+$lg: 992px;
+
+html, body {
+    background-color: color-primary();
+    color: color-accent();
+    font-size: 14px;
+    font-weight: 100;
+    font-feature-settings: 'liga' 0;
+}
+
+body, %initial-font {
+    font-family: Spartan, Arial, sans-serif;
+}
+
+a, a:link, a:visited, a:hover {
+    cursor: pointer;
+    color: inherit;
+    text-decoration: none;
+    transition: .5s opacity;
+}
+
+a:hover {
+    opacity: .5;
+}
+
+::selection {
+    background-color: color-tertiary();
+    color: color-primary();
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: color-accent(.5);
+    border-radius: 20px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+@media (min-width: $sm) {
+    .mb-view {
+        display: none!important;
+    }
+}
+
+@media (max-width: calc($sm - 1px)) {
+    .dt-view {
+        display: none!important;
+    }
+}
+
+@media (min-width: $md) {
+    .mb-view-md {
+        display: none!important;
+    }
+}
+
+@media (max-width: calc($md - 1px)) {
+    .dt-view-md {
+        display: none!important;
+    }
+}
+
+@media (min-width: $lg) {
+    .mb-view-lg {
+        display: none!important;
+    }
+}
+
+@media (max-width: calc($lg - 1px)) {
+    .dt-view-lg {
+        display: none!important;
+    }
+}
+
+.btn {
+    border: none;
+}
+
+#sim .hamburger {
+    padding-top: 0;
+    padding-bottom: 0;
+
+    &:hover, &.is-active:hover {
+        opacity: 1;
+    }
+
+    &-box {
+        width: 24px;
+    }
+
+    &-inner, &-inner:before, &-inner:after {
+        background-color: white!important;
+        width: 100%;
+        height: 2px;
+    }
+}
+
+[class*=fa-] > * {
+    @extend %initial-font;
+}
+
+.carousel {
+    &-indicators {
+        margin-bottom: 0;
+
+        li {
+            margin-right: 10px;
+            margin-left: 10px;
+        }
+    }
+
+    &-control-prev, &-control-next {
+        font-size: 4rem;
+    }
+}

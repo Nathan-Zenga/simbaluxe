@@ -1,0 +1,167 @@
+<%- include ('partials/header', { pagename: "home" }) -%>
+    <section id="home-section">
+        <img id="main-img" src="<%= site_content?.home_main_image.url %>" alt="home page main image" style="opacity: 0">
+    </section>
+
+    <section id="shop-section">
+        <img class="bg-underlay-image" src="img/blonde-hair-thick-bg.png" alt="section background image" style="opacity: 0">
+
+        <div class="content-wrapper">
+            <h1 class="section-title">Shop</h1>
+            <%_ if (!products.length) { _%>
+            <h2 class="text-center font-weight-light">Please be patient, we're currently stocking up!</h2>
+            <%_ } else { _%>
+            <div id="product-carousel" class="carousel slide" data-interval="false">
+                <%_
+                    const productsPaginated = paginate(products, 2);
+                    if (productsPaginated.length > 1) {
+                _%>
+                <ol class="carousel-indicators">
+                    <%_ productsPaginated.forEach((page, i) => { _%>
+                    <li data-target="#product-carousel" data-slide-to="<%= i %>" class="<%= !i ? 'active' : '' %>"></li>
+                    <%_ }) _%>
+                </ol>
+                <%_ } _%>
+
+                <div class="carousel-inner">
+                    <%_ productsPaginated.forEach((page, i) => { _%>
+                    <div class="carousel-item <%= !i ? 'active' : '' %>">
+                        <div class="container">
+                            <div class="row justify-content-center">
+                                <%_ page.forEach(product => { _%>
+                                <div class="col-6">
+                                    <div class="shop-product-item">
+                                        <a class="img-wrapper toast-toggle <%= !product.main_images.length ? 'no-image' : '' %>">
+                                            <%_ const image_src = product.main_images[0]?.url || placeholder_product_image _%>
+                                            <img class="img" src="<%= image_src %>" alt="Product image for '<%= product.name %>'">
+                                        </a>
+
+                                        <div class="info">
+                                            <h2 class="name">
+                                                <a class="toast-toggle"><%= product.name %></a>
+                                            </h2>
+
+                                            <div class="price">
+                                                <p>from</p>
+                                                <%_ const price_minimum = Math.min(...product.units.map(u => u.price)) _%>
+                                                <p><span>£<%- price_minimum.toFixed(2) %></span></p>
+                                            </div>
+                                        </div>
+
+                                        <div class="site-toast bottom wide product-opts-toast">
+                                            <div class="container px-0">
+                                                <button type="button" class="close-btn btn" aria-label="Close">
+                                                    <span class="fal fa-times"></span>
+                                                </button>
+
+                                                <form class="form mb-md-5 add-to-cart-form" action="/shop/cart/add">
+                                                    <div class="row no-gutters mb-5">
+                                                        <div class="col-8">
+                                                            <a href="<%= product.link %>">
+                                                            <span class="text-uppercase mr-sm-2" style="font-size: 1.25em">
+                                                                <%= product.name %>
+                                                            </span>
+                                                            <span class="small font-weight-light d-block d-sm-inline">
+                                                                    View full details
+                                                            </span>
+                                                            </a>
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="text-right price-calculated"></div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row options">
+                                                        <div class="col">
+                                                            <label for="product-<%= product._id %>-style">Style</label>
+                                                            <select id="product-<%= product._id %>-style" class="custom-select form-control mb-4 product-style" name="style" required>
+                                                                <option value="">-</option>
+                                                                <%_ product.units.slice().sort((a,b) => parseInt(a.unit_description) - parseInt(b.unit_description)).forEach(unit => { _%>
+                                                                <option value="<%= unit.unit_description %>"><%= unit.unit_description %></option>
+                                                                <%_ }) _%>
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="col-md-4 pr-md-0">
+                                                            <label for="product-<%= product._id %>-quantity">Quantity</label>
+                                                            <select id="product-<%= product._id %>-quantity" class="custom-select form-control mb-4 product-quantity" name="quantity" required>
+                                                                <%_ for (var i = 1; i <= 10; i++) { _%>
+                                                                <option value="<%= i %>"><%= i %></option>
+                                                                <%_ } _%>
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="col-md-2">
+                                                            <input type="hidden" name="id" value="<%= product._id %>">
+                                                            <button class="btn btn-theme btn-icon-circle mt-md-0 mt-4" type="submit">
+                                                                <i class="fal fa-cart-arrow-down">
+                                                                    <span class="sr-only">Add to basket</span>
+                                                                </i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <%_ }) _%>
+                            </div>
+                        </div>
+                    </div>
+                    <%_ }) _%>
+                </div>
+
+                <%_ if (productsPaginated.length > 1) { _%>
+                <button class="carousel-control-prev" type="button" data-target="#product-carousel" data-slide="prev">
+                    <span class="fal fa-angle-left" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                </button>
+
+                <button class="carousel-control-next" type="button" data-target="#product-carousel" data-slide="next">
+                    <span class="fal fa-angle-right" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                </button>
+                <%_ } _%>
+            </div>
+            <%_ } _%>
+        </div>
+    </section>
+
+    <%_ if (site_content?.about_info) { _%>
+    <section id="about-section">
+        <div class="content-wrapper container">
+            <h1 class="section-title">Our Story</h1>
+            <p><%- site_content.about_info.replace(/\r?\n/g, "</p><p>").replace(/<p><\/p>/g, "") %></p>
+        </div>
+    </section>
+    <%_ } _%>
+
+    <section id="contact-section">
+        <div class="content-wrapper container">
+            <form action="/contact/mail/send" id="contact-form" class="form">
+                <fieldset>
+                    <div class="row">
+                        <div class="col-sm">
+                            <label for="name">Name *</label>
+                            <input class="form-control mb-4" type="text" id="name" name="name" required />
+                        </div>
+
+                        <div class="col-sm">
+                            <label for="email">Email Address *</label>
+                            <input class="form-control mb-4" type="email" id="email" name="email" required />
+                        </div>
+                    </div>
+                </fieldset>
+
+                <label for="subject">Subject *</label>
+                <input class="form-control mb-4" type="text" id="subject" name="subject" required />
+
+                <label for="message">Message *</label>
+                <textarea class="form-control mb-4" id="message" name="message" required></textarea>
+
+                <input class="btn btn-theme mt-4" type="submit" value="Send" />
+            </form>
+        </div>
+    </section>
+<%- include ('partials/footer') -%>

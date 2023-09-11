@@ -1,0 +1,30 @@
+    </main>
+    <footer>
+        <a id="to-top" role="button" aria-hidden="true">
+            <span class="fal fa-angle-up"></span>
+        </a>
+
+        <div id="accepted-cards" class="text-center mb-5">
+            <p>We accept the following payment methods:</p>
+            <p id="cards">
+                <i class="mr-sm-2 fab fa-cc-paypal"></i>
+                <i class="mr-sm-2 fab fa-cc-visa"></i>
+                <i class="mr-sm-2 fab fa-cc-mastercard"></i>
+                <i class="mr-sm-2 fab fa-cc-amex"></i>
+                <i class="mr-sm-2 fab fa-cc-discover"></i>
+                <i class="mr-sm-0 fab fa-cc-jcb"></i>
+            </p>
+        </div>
+
+        <%_ if (site_content?.platforms.length) { _%>
+        <div id="social-links" class="mb-5">
+            <%_ site_content.platforms.forEach(p => { _%>
+            <a class="fab fa-<%= p.name.toLowerCase() %>" href="<%= p.url %>" target="_blank" aria-label="<%= p.name %> link"></a>
+            <%_ }) _%>
+        </div>
+        <%_ } _%>
+
+        <div id="copyright" class="text-center">&copy; All Rights Reserved</div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<%- include ('partials/header', { pagename: "product", title: product.name }) -%>
+    <div class="container">
+        <div id="product-item-full" class="product-item">
+            <div id="product-bg-image-carousel" class="carousel slide carousel-fade" data-interval="false">
+                <div class="carousel-inner">
+                    <%_ product.main_images.forEach((image, i) => { _%>
+                    <div class="carousel-item <%= !i ? 'active' : '' %>">
+                        <img class="bg-layer dt-view" src="<%= image.url %>" alt="background layer image">
+                    </div>
+                    <%_ }) _%>
+                </div>
+            </div>
+
+            <div class="row no-gutters">
+                <div class="col-md-7">
+                    <div id="product-image-carousel" class="carousel slide" data-interval="false">
+                        <div class="carousel-inner">
+                            <%_ product.main_images.forEach((image, i) => { _%>
+                            <div class="carousel-item <%= !i ? 'active' : '' %>">
+                                <div class="img-wrapper">
+                                    <img class="img" src="<%= image.url %>" alt="item image">
+                                </div>
+                            </div>
+                            <%_ }) _%>
+                        </div>
+
+                        <%_ if (product.main_images.length > 1) { _%>
+                        <div class="carousel-controls">
+                            <div class="wrapper">
+                                <a type="button" data-target="#product-item-full .carousel" data-slide="prev" class="fal fa-angle-left"></a>
+                                <a type="button" data-target="#product-item-full .carousel" data-slide="next" class="fal fa-angle-right"></a>
+                            </div>
+                        </div>
+                        <%_ } _%>
+                    </div>
+                </div>
+
+                <div class="col-md-5">
+                    <div id="info">
+                        <h1 id="name"><%= product.name %></a></h1>
+
+                        <%_ const price_minimum = Math.min(...product.units.map(u => u.price)) _%>
+                        <div id="price" class="price">
+                            from <span>£<%- price_minimum.toFixed(2) %></span>
+                        </div>
+
+                        <%_ if (product.info) { _%>
+                        <div id="description">
+                            <p><%- product.info.replace(/\r?\n/g, "</p><p>") %></p>
+                        </div>
+                        <%_ } _%>
+
+                        <form class="form add-to-cart-form" action="/shop/cart/add">
+                            <div class="options">
+                                <label for="product-style">Style</label>
+                                <select id="product-style" class="custom-select form-control product-style mb-4" name="style" required>
+                                    <option value="">-</option>
+                                    <%_ product.units.slice().sort((a,b) => parseInt(a.unit_description) - parseInt(b.unit_description)).forEach(unit => { _%>
+                                    <option value="<%= unit.unit_description %>"><%= unit.unit_description %></option>
+                                    <%_ }) _%>
+                                </select>
+
+                                <label for="product-quantity">Quantity</label>
+                                <select id="product-quantity" class="custom-select form-control product-quantity mb-4" name="quantity" required>
+                                    <%_ for (var i = 1; i <= 10; i++) { _%>
+                                    <option value="<%= i %>"><%= i %></option>
+                                    <%_ } _%>
+                                </select>
+                            </div>
+
+                            <div class="price-calculated price mb-3"></div>
+
+                            <input type="hidden" name="id" value="<%= product._id %>">
+                            <button class="btn btn-theme btn-icon-circle" type="submit">
+                                <i class="fal fa-cart-arrow-down">
+                                    <span class="sr-only">Add to basket</span>
+                                </i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(".carousel-controls a").click(function() {
+            $($(this).attr("data-target")).carousel($(this).attr("data-slide"));
+        });
+    </script>
+<%- include ('partials/footer') -%>

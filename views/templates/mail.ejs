@@ -1,0 +1,91 @@
+<html>
+    <head>
+        <style>
+            #mail-body {
+                font-family: Arial, sans-serif;
+                font-size: 13px;
+                margin: 0;
+            }
+            .section {
+                padding-top: 30px;
+                padding-bottom: 30px;
+            }
+            .header.section {
+                padding: 10px 0;
+            }
+            .header.section #logo {
+                letter-spacing: 2px;
+            }
+            .header, .footer {
+                background-color: rgb(124, 76, 76);
+                color: rgb(250, 128, 114);
+                text-align: center;
+            }
+            .footer p {
+                font-size: .8em;
+            }
+            .footer p:not(:last-child) {
+                margin-bottom: 1.5em;
+            }
+            .footer a + a {
+                margin-left: 10px;
+            }
+            #mail-body .social-icon {
+                -webkit-filter: invert(100%);
+                filter: invert(100%);
+            }
+            .centered-block {
+                margin-left: auto;
+                margin-right: auto;
+                max-width: 550px;
+                padding-left: 15px;
+                padding-right: 15px;
+            }
+            .button {
+                display: inline-block;
+                border: none;
+                border-radius: 5px;
+                width: auto;
+                background-color: rgb(124, 76, 76);
+                padding: 15px 30px;
+                font-weight: 400;
+                margin-bottom: 1em;
+                text-decoration: none;
+            }
+            .button + .button {
+                margin-left: 10px;
+            }
+        </style>
+    </head>
+    <body id="mail-body">
+        <div class="header section">
+            <div id="logo">SIMBALUXE</div>
+        </div>
+        <div class="main section centered-block" id="message">
+            <%- 
+                (function() {
+                    const url_regex = /(?:(?:https?|ftp|file|data):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])/gi;
+                    const url_btn_regex = /\(\((.*?)\)\)\[(.*?)\]/gi;
+                    const email_regex = /(?:[a-z0-9!#$%&'*+=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/gi;
+
+                    return message.replace(url_btn_regex, match => {
+                        const txt = match.match(/\(\((.*?)\)\)/gi)[0].replace(/[\(\)]/g, "");
+                        const url = match.match(/\[(.*?)\]/gi)[0].replace(/[\[\]]/g, "");
+                        const href = /^www/.test(url) || !/^(https?|ftp|file|data)/.test(url) ? "http://" + url : url;
+                        return `<a class="button" style="color: rgb(240, 230, 140)!important" target="_blank" href="${href.replace(/\//g, '&#47;')}">${txt}</a>`
+                    }).replace(url_regex, (match, pos, str) => {
+                        const href = /^www/.test(match) || !/^(https?|ftp|file|data)/.test(match) ? "http://" + match : match;
+                        const href_present = str.slice(pos-6, pos) === 'href="';
+                        return href_present ? `<a style="color: inherit!important" target="_blank" href="${href}">${match}</a>` : match;
+                    }).replace(email_regex, match => {
+                        const href = "mailto:" + match;
+                        return `<a style="color: inherit!important" target="_blank" href="${href}">${match}</a>`
+                    }).replace(/\r?\n/g, "<br>").replace(/\t/g, "&emsp;");
+                })()
+            %>
+        </div>
+        <div class="footer section">
+            <p>&copy; Simbaluxe <%= new Date().getFullYear() %>. All rights reserved.</p>
+        </div>
+    </body>
+</html>
