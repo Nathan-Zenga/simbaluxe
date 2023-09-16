@@ -155,7 +155,12 @@
                 </fieldset>
 
                 <label for="subject">Subject *</label>
-                <input class="form-control theme mb-4" type="text" id="subject" name="subject" required />
+                <select class="form-control theme mb-4 custom-select" id="subject" name="subject" required>
+                    <option value="">-</option>
+                    <%_ subject_options.forEach(subject => { _%>
+                    <option value="<%= subject %>"><%= subject %></option>
+                    <%_ }) _%>
+                </select>
 
                 <label for="message">Message *</label>
                 <textarea class="form-control theme mb-4" id="message" name="message" required></textarea>
