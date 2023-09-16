@@ -1,0 +1,370 @@
+<%- include ('partials/header', { pagename: "admin", title: "Admin" }) -%>
+<div class="container mb-5" id="admin-space">
+    <div class="nav nav-pills justify-content-center mb-5">
+        <a class="nav-link active" data-toggle="pill" href="#products">Products</a>
+        <a class="nav-link" data-toggle="pill" href="#site-content">Site contents</a>
+    </div>
+
+    <div class="tab-content">
+        <div id="products" class="tab-pane fade show active">
+            <div class="nav nav-pills justify-content-center mb-4">
+                <a class="nav-link active" data-toggle="pill" href="#product-new">New</a>
+                <a class="nav-link" data-toggle="pill" href="#product-edit">Update</a>
+                <a class="nav-link" data-toggle="pill" href="#product-remove">Remove</a>
+            </div>
+
+            <div class="tab-content">
+                <div id="product-new" class="tab-pane fade show active">
+                    <form action="/shop/product/create" class="form create-form">
+                        <label for="product-name">Name *</label>
+                        <input type="text" name="name" class="form-control theme mb-4" id="product-name" required>
+
+                        <label for="product-info">Info</label>
+                        <textarea name="info" class="form-control theme mb-4" id="product-info"></textarea>
+
+                        <fieldset>
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <label for="product-colour">Colour</label>
+                                    <input type="text" name="colour" class="form-control theme mb-4" id="product-colour">
+                                </div>
+
+                                <div class="col-sm-6">
+                                    <label for="product-size">Size</label>
+                                    <select name="size" class="custom-select form-control theme mb-4" id="product-size">
+                                        <option value="">-</option>
+                                        <%_ product_sizes.forEach(size => { _%>
+                                        <option value="<%= size %>"><%= size %></option>
+                                        <%_ }) _%>
+                                    </select>
+                                </div>
+
+                                <div class="col-sm-4">
+                                    <label for="product-length-inches">Length (inches)</label>
+                                    <input type="number" name="length_inches" min="1" class="form-control theme mb-4" id="product-length-inches">
+                                </div>
+
+                                <div class="col-sm-4">
+                                    <label for="product-price">Price</label>
+                                    <input type="number" name="price" min="0.01" step="0.01" class="form-control theme mb-4" id="product-price">
+                                </div>
+
+                                <div class="col-sm-4">
+                                    <label for="product-stock-quantity">Stock quantity</label>
+                                    <input type="number" name="unit_stock_qty" min="0" class="form-control theme mb-4" id="product-stock-quantity">
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <label for="product-image-file">Images</label>
+                        <fieldset class="file-upload-container">
+                            <div class="file-uploader mb-5 row no-gutters">
+                                <div class="col">
+                                    <div class="input-group">
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="product-image-file" accept="image/*" data-fieldname="image_file">
+                                            <label class="custom-file-label">Select file</label>
+                                        </div>
+                                        <div class="input-group-append">
+                                            <input type="hidden" name="image_file">
+                                            <button class="btn btn-theme clear-uploads" type="button">Clear</button>
+                                        </div>
+                                    </div>
+                                    <input type="url" name="image_url" class="form-control theme" id="product-image-url" placeholder="Or enter the image URL">
+                                </div>
+
+                                <div class="col-sm-2 col-3 text-right file-uploader-options">
+                                    <button type="button" class="btn add">
+                                        <i class="fal fa-plus"></i>
+                                        <span class="sr-only">Add</span>
+                                    </button>
+
+                                    <button type="button" class="btn remove">
+                                        <i class="fal fa-trash"></i>
+                                        <span class="sr-only">Delete</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <button class="btn btn-theme" type="submit">Save</button>
+                    </form>
+                </div>
+
+                <div id="product-edit" class="tab-pane fade">
+                    <form action="/shop/product/update" class="form edit-form">
+                        <label for="product-id">Select product *</label>
+                        <select name="product_id" class="custom-select form-control theme id-select mb-4" id="product-id" required>
+                            <option value="">-</option>
+                            <%_ products.forEach(p => { _%>
+                            <option value="<%= p.id %>"><%= p.name %></option>
+                            <%_ }) _%>
+                        </select>
+
+                        <label for="product-name-edit">Name *</label>
+                        <input type="text" name="name" class="form-control theme mb-4" id="product-name-edit" required>
+
+                        <label for="product-info-edit">Info</label>
+                        <textarea name="info" class="form-control theme mb-4" id="product-info-edit"></textarea>
+
+                        <label for="product-unit-id">Select unit</label>
+                        <select name="unit_id" class="custom-select form-control theme id-select mb-4" id="product-unit-id">
+                            <%_ const unit_id_option = '<option value="">-</option><option value="new">New</option>' _%>
+                            <%- unit_id_option %>
+                        </select>
+
+                        <fieldset>
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <label for="product-colour-edit">Colour</label>
+                                    <input type="text" name="colour" class="form-control theme mb-4" id="product-colour-edit">
+                                </div>
+
+                                <div class="col-sm-6">
+                                    <label for="product-size-edit">Size</label>
+                                    <select name="size" class="custom-select form-control theme mb-4" id="product-size-edit">
+                                        <option value="">-</option>
+                                        <%_ product_sizes.forEach(size => { _%>
+                                        <option value="<%= size %>"><%= size %></option>
+                                        <%_ }) _%>
+                                    </select>
+                                </div>
+
+                                <div class="col-sm-4">
+                                    <label for="product-length-inches-edit">Length (inches)</label>
+                                    <input type="number" name="length_inches" min="1" class="form-control theme mb-4" id="product-length-inches-edit">
+                                </div>
+
+                                <div class="col-sm-4">
+                                    <label for="product-price-edit">Price</label>
+                                    <input type="number" name="price" min="0.01" step="0.01" class="form-control theme mb-4" id="product-price-edit">
+                                </div>
+
+                                <div class="col-sm-4">
+                                    <label for="product-stock-quantity-edit">Stock quantity</label>
+                                    <input type="number" name="unit_stock_qty" min="0" class="form-control theme mb-4" id="product-stock-quantity-edit">
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <label for="product-image-file-edit">Images</label>
+                        <fieldset class="file-upload-container">
+                            <div class="file-uploader mb-5 row no-gutters">
+                                <div class="col">
+                                    <div class="input-group">
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="product-image-file-edit" accept="image/*" data-fieldname="image_file">
+                                            <label class="custom-file-label">Select file</label>
+                                        </div>
+                                        <div class="input-group-append">
+                                            <input type="hidden" name="image_file">
+                                            <button class="btn btn-theme clear-uploads" type="button">Remove</button>
+                                        </div>
+                                    </div>
+                                    <input type="url" name="image_url" class="form-control theme" id="product-image-url-edit" placeholder="Or enter the image URL">
+                                </div>
+
+                                <div class="col-sm-2 col-3 text-right file-uploader-options">
+                                    <button type="button" class="btn add">
+                                        <i class="fal fa-plus"></i>
+                                        <span class="sr-only">Add</span>
+                                    </button>
+
+                                    <button type="button" class="btn remove">
+                                        <i class="fal fa-trash"></i>
+                                        <span class="sr-only">Delete</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <button class="btn btn-theme" type="submit">Update</button>
+                    </form>
+                </div>
+
+                <div id="product-remove" class="tab-pane fade search-scope">
+                    <form class="filter-search-form mb-4">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <label class="input-group-text"><i class="fas fa-search"></i></label>
+                            </div>
+                            <input type="search" class="form-control theme filter-search-input" placeholder="Search to filter">
+                        </div>
+                    </form>
+
+                    <form action="/shop/product/delete" class="form remove-form">
+                        <fieldset>
+                        <%_ products.forEach((p, i) => { _%>
+                            <div class="form-check mb-3 product-checkbox search-item">
+                                <%_ const input_id = `product-unit-${i+1}` _%>
+                                <input type="checkbox" class="form-check-input" id="<%= input_id %>" name="product_id" value="<%= p.id %>">
+                                <label class="form-check-label ml-2 search-option" for="<%= input_id %>"><%= p.name %></label>
+                            </div>
+                            <div class="form-check-sublist ml-3">
+                            <%_ p.units.forEach((u, j) => { _%>
+                                <div class="form-check mb-3 product-unit-checkbox search-item">
+                                    <%_ const input_child_id = `product-unit-${i+1}-${j+1}` _%>
+                                    <input type="checkbox" class="form-check-input" id="<%= input_child_id %>" name="unit_id" value="<%= u.id %>">
+                                    <label class="form-check-label ml-2 search-option" for="<%= input_child_id %>"><%= u.unit_description %></label>
+                                </div>
+                            <%_ }) _%>
+                            </div>
+                        <%_ }) _%>
+                        </fieldset>
+
+                        <button class="btn btn-theme" type="submit">Remove</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div id="site-content" class="tab-pane fade">
+            <div class="nav nav-pills justify-content-sm-center mb-4">
+                <a class="nav-link active" data-toggle="pill" href="#home-main-image">Homepage image</a>
+                <a class="nav-link" data-toggle="pill" href="#platforms">Platforms / socials</a>
+                <a class="nav-link" data-toggle="pill" href="#our-story-info">'Our Story' info</a>
+            </div>
+
+            <div class="tab-content">
+                <div id="home-main-image" class="tab-pane fade show active">
+                    <form action="/site/content/home-main-image/update" class="form">
+                        <label>Current image:</label>
+                        <div id="home-main-image-current" class="mb-5">
+                        <%_ if (content[0]?.home_main_image.url) { _%>
+                            <img class="bg-layer" src="<%= content[0].home_main_image.url %>" alt="Current homepage main image (background)">
+                            <img src="<%= content[0].home_main_image.url %>" alt="Current homepage main image">
+                        <%_ } else { _%>
+                            <p class="text-center" style="font-weight: 400">No current image</p>
+                        <%_ } _%>
+                        </div>
+
+                        <label>Replace image:</label>
+                        <fieldset class="file-upload-container">
+                            <div class="file-uploader">
+                                <div class="input-group">
+                                    <div class="custom-file">
+                                        <input type="file" class="custom-file-input" id="homepage-image-file" accept="image/*" data-fieldname="image_file">
+                                        <label class="custom-file-label">Select file</label>
+                                    </div>
+                                    <div class="input-group-append">
+                                        <input type="hidden" name="image_file">
+                                        <button class="btn btn-theme clear-uploads" type="button">Clear</button>
+                                    </div>
+                                </div>
+                                <input type="url" name="image_url" class="form-control theme" id="homepage-image-url" placeholder="Or enter the image URL">
+                            </div>
+                        </fieldset>
+
+                        <button class="btn btn-theme mt-4" type="submit">Update</button>
+                    </form>
+                </div>
+
+                <div id="platforms" class="tab-pane fade">
+                    <form action="/site/content/platform-links/update" class="form">
+                        <fieldset>
+                        <%_ content[0]?.platforms.forEach(platform => { _%>
+                            <div class="input-group mb-5">
+                                <select name="platform_name" class="form-control theme mr-3 custom-select" required>
+                                    <option value="">-</option>
+                                    <%_ platforms.forEach(p => {
+                                        const selected = platform.name === p ? "selected" : "" _%>
+                                    <option value="<%= p %>" <%- selected %>><%= p %></option>
+                                    <%_ }) _%>
+                                </select>
+                                <input name="platform_url" type="text" class="form-control theme" value="<%= platform.url %>" required>
+                            </div>
+                        <%_ }) _%>
+                        </fieldset>
+
+                        <button class="btn btn-theme" type="submit">Update</button>
+                    </form>
+                </div>
+
+                <div id="our-story-info" class="tab-pane fade">
+                    <form action="/site/content/our-story/update" class="form">
+                        <label>'Our Story' info</label>
+                        <textarea name="about_info" class="form-control theme" style="height: 300px"><%- content[0]?.about_info || "" %></textarea>
+
+                        <button class="btn btn-theme mt-4" type="submit">Update</button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    $.post("/admin/search", function(docs) {
+        docs = Array.isArray(docs) ? docs : [];
+
+        $(".edit-form .id-select").change(function() {
+            var $form = $(this).closest("form");
+            var id = this.value;
+            var result = docs.find(function(item) { return id == item._id }) || {};
+
+            $form.find("#product-name-edit").val(result.name);
+            $form.find("#product-info-edit").val(result.info);
+
+            var units = Array.isArray(result.units) ? result.units : [];
+            var option = '<%- unit_id_option %>';
+            $form.find("#product-unit-id").html(option).change();
+            units.forEach(function(u) {
+                $form.find("#product-unit-id").append($(option).first().val(u._id).text(u.unit_description));
+            });
+        });
+
+        $(".edit-form #product-unit-id").off("change").change(function() {
+            var $form = $(this).closest("form");
+            var product_id = $form.find("#product-id").val();
+            var unit_id = $form.find("#product-unit-id").val();
+            var result = docs.find(function(item) { return product_id == item._id && Array.isArray(item.units) }) || {};
+            var unit = result.units ? result.units.find(function(u) { return unit_id == u._id }) || {} : {};
+            $form.find(".clear-uploads").click();
+            $form.find(".file-uploader").not(":first-child").remove();
+
+            $form.find("#product-colour-edit").val(unit.colour);
+            $form.find("#product-length-inches-edit").val(unit.length_inches);
+            $form.find("#product-size-edit").val(unit.size);
+            $form.find("#product-price-edit").val(unit.price);
+            $form.find("#product-stock-quantity-edit").val(unit.unit_stock_qty);
+
+            var $container = $form.find(".file-upload-container");
+            var $uploader = $form.find(".file-uploader").first();
+            unit.images && unit.images.forEach(function(image, i) {
+                var $input_url = $uploader.find("input[type=url]");
+                $input_url = i > 0 ? $uploader.clone(true).appendTo($container).find("input[type=url]") : $input_url;
+                $input_url.val(image.url);
+            });
+        });
+    });
+
+    $("#admin-space form").submit(function(e) {
+        e.preventDefault();
+        var isRemoveForm = $(this).is(".remove-form");
+        var progressMsg = isRemoveForm ? "Removing" : "Saving";
+        var btnControl = new submitBtnController(this, { progressMsg, ellipsis: true });
+        $.post(this.action, $(this).serializeArray(), function(message) {
+            Alert(message);
+        }).fail(function(err) {
+            Alert(err.responseText);
+        }).always(function() {
+            btnControl.finish();
+        });
+    });
+
+    $(".remove-form input[type=checkbox]").change(function() {
+        $(this).closest(".form-check").next(".form-check-sublist").find("input[type=checkbox]:visible").prop("checked", this.checked);
+    });
+
+    $(".filter-search-input").on("input", function(e) {
+        var $items = $(e.target).closest(".search-scope").find(".search-item");
+        !e.target.value ? $items.show() : $items.hide().filter(function() {
+            var regex = new RegExp("\\b" + e.target.value.replace(/\W/g, function(m) { return "\\" + m }), "gi");
+            return regex.test($(this).find(".search-option").text())
+        }).show();
+
+        $items.filter(":visible").closest(".form-check-sublist").prev(".search-item").show();
+    });
+</script>
+<%- include ('partials/footer') -%>

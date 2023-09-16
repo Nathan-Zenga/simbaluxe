@@ -3,7 +3,7 @@
         <div id="product-item-full" class="product-item">
             <div id="product-bg-image-carousel" class="carousel slide carousel-fade" data-interval="false">
                 <div class="carousel-inner">
-                    <%_ product.main_images.forEach((image, i) => { _%>
+                    <%_ product.all_images.forEach((image, i) => { _%>
                     <div class="carousel-item <%= !i ? 'active' : '' %>">
                         <img class="bg-layer dt-view" src="<%= image.url %>" alt="background layer image">
                     </div>
@@ -15,7 +15,7 @@
                 <div class="col-md-7">
                     <div id="product-image-carousel" class="carousel slide" data-interval="false">
                         <div class="carousel-inner">
-                            <%_ product.main_images.forEach((image, i) => { _%>
+                            <%_ product.all_images.forEach((image, i) => { _%>
                             <div class="carousel-item <%= !i ? 'active' : '' %>">
                                 <div class="img-wrapper">
                                     <img class="img" src="<%= image.url %>" alt="item image">
@@ -24,10 +24,13 @@
                             <%_ }) _%>
                         </div>
 
-                        <%_ if (product.main_images.length > 1) { _%>
+                        <%_ if (product.all_images.length > 1) { _%>
                         <div class="carousel-controls">
                             <div class="wrapper">
                                 <a type="button" data-target="#product-item-full .carousel" data-slide="prev" class="fal fa-angle-left"></a>
+                                <span class="slide-counter">
+                                    <span class="slide-number">1</span> / <%= product.all_images.length %>
+                                </span>
                                 <a type="button" data-target="#product-item-full .carousel" data-slide="next" class="fal fa-angle-right"></a>
                             </div>
                         </div>
@@ -86,6 +89,10 @@
     <script>
         $(".carousel-controls a").click(function() {
             $($(this).attr("data-target")).carousel($(this).attr("data-slide"));
+        });
+
+        $(".carousel").on("slide.bs.carousel", function(e) {
+            $(this).find(".slide-number").text(e.to + 1);
         });
     </script>
 <%- include ('partials/footer') -%>

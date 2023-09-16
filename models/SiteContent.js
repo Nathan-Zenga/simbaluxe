@@ -15,7 +15,7 @@ const SiteContent = module.exports = model('SiteContent', (() => {
 
     schema.pre("save", async function() {
         const test_path = !production ? "test/" : "";
-        const public_id = `simbaluxe/${test_path}site-content/homepage-main-image`.replace(/[ ?&#\\%<>]/g, "_");
+        const public_id = `simbaluxe/${test_path}site-content/homepage-main-image`.replace(/[ ?&#\\%<>+]/g, "_");
         const images_updated = this.modifiedPaths({ includeChildren: true }).includes("home_main_image");
 
         if (images_updated && this.home_main_image.url) {

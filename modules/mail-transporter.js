@@ -39,12 +39,12 @@ class MailTransporter {
             };
         } catch(err) {
             if (NODE_ENV === "production") throw err;
-            const acc = await nodemailer.createTestAccount();
+            const { user, pass } = await nodemailer.createTestAccount();
             return {
                 host: 'smtp.ethereal.email',
                 port: 587,
                 secure: false,
-                auth: { user: acc.user, pass: acc.pass }
+                auth: { user, pass }
             }
         }
     };

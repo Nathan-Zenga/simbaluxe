@@ -9,7 +9,7 @@ const MemoryStore = require('memorystore')(session);
 const passport = require('passport');
 const cloud = require('cloudinary').v2;
 const { OAuth2 } = (require("googleapis")).google.auth;
-const { platforms, placeholder_product_image } = require('./config/constants');
+const { platforms, product_sizes, placeholder_product_image } = require('./config/constants');
 const SiteContent = require('./models/SiteContent');
 const MailTransporter = require('./modules/mail-transporter');
 const visitor = require('./modules/visitor-info');
@@ -54,6 +54,7 @@ app.use(async (req, res, next) => { // global variables
     res.locals.paginate = paginate;
     res.locals.platforms = platforms;
     res.locals.placeholder_product_image = placeholder_product_image;
+    res.locals.product_sizes = product_sizes;
     res.locals.site_content = await SiteContent.findOne();
 
     if (!req.session.checkout_session_id || /^\/shop\/checkout\/(cancel|session\/complete)$/.test(req.originalUrl)) return next();
@@ -61,9 +62,11 @@ app.use(async (req, res, next) => { // global variables
 });
 
 app.use('/', require('./routes/index'));
+app.use('/admin', require('./routes/admin'));
 app.use('/shop', require('./routes/shop'));
 app.use('/shop/product', require('./routes/product'));
 app.use('/shop/checkout', require('./routes/checkout'));
+app.use('/site/content', require('./routes/site-content'));
 app.use('/test', require('./routes/test'));
 
 app.get("*", (req, res) => {

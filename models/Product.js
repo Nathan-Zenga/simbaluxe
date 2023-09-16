@@ -1,9 +1,10 @@
 const { map, each } = require('async');
+const { default: axios } = require('axios');
 const { model, Schema } = require('mongoose');
 const cloud = require('cloudinary').v2;
+const production = process.env.NODE_ENV === "production";
 Schema.Types.String.set('trim', true);
 Schema.Types.Number.set('default', 0);
-const production = process.env.NODE_ENV === "production";
 
 const Product = module.exports = model('Product', (() => {
     const u_schema = new Schema({
@@ -17,7 +18,8 @@ const Product = module.exports = model('Product', (() => {
     });
 
     u_schema.virtual("unit_description").get(function() {
-        return `${this.length_inches}in ${this.colour} (${this.size})`;
+        const colour = this.colour.toLowerCase().replace(/\b./g, m => m.toUpperCase());
+        return `${this.length_inches}in ${colour} (${this.size})`;
     });
 
     u_schema.virtual("main_image").get(function() {
@@ -32,19 +34,27 @@ const Product = module.exports = model('Product', (() => {
         if (existing) return next(Error("Cannot save product in the same style as another (duplicate)"));
 
         try {
-            const results = !images_updated ? unit.images : await map(unit.images, (image, cb) => {
-                const test_path = !production ? "test/" : "";
-                const public_id = `simbaluxe/${test_path}products/${unit.$parent().name}_${unit.unit_description}_${Date.now()}`.replace(/[ ?&#\\%<>]/g, "_");
-                cloud.uploader.upload(image.url, { public_id }, (err, result) => {
-                    if (err) return cb(err);
-                    p_ids.push(result.public_id);
-                    cb(null, { p_id: result.public_id, url: result.secure_url });
-                });
-            });
+            const isDataURL = s => !!s.match(isDataURL.regex);
+            isDataURL.regex = /^\s*data:([a-z]+\/[a-z]+(;[a-z\-]+\=[a-z\-]+)?)?(;base64)?,[a-z0-9\!\$\&\'\,\(\)\*\+\,\;\=\-\.\_\~\:\@\/\?\%\s]*\s*$/i;
 
-            unit.images = results;
-            unit.main_image_index = Math.min(unit.main_image_index, results.length-1);
-            unit.main_image_index = Math.max(unit.main_image_index, 0);
+            if (images_updated) {
+                const promises = unit.images.filter(img => !isDataURL(img.url)).map(img => axios.get(img.url));
+                await Promise.all(promises).catch(e => { throw new Error("One or more selected image sources not found / valid") });
+
+                const results = await map(unit.images, (image, cb) => {
+                    const test_path = !production ? "test/" : "";
+                    const public_id = `simbaluxe/${test_path}products/${unit.$parent().name}_${unit.unit_description}_${Date.now()}`.replace(/[ ?&#\\%<>+]/g, "_");
+                    cloud.uploader.upload(image.url, { public_id }, (err, result) => {
+                        if (err) return cb(err);
+                        p_ids.push(result.public_id);
+                        cb(null, { p_id: result.public_id, url: result.secure_url });
+                    });
+                });
+
+                unit.images = results;
+                unit.main_image_index = Math.min(unit.main_image_index, results.length-1);
+                unit.main_image_index = Math.max(unit.main_image_index, 0);
+            }
             next();
         } catch (err) {
             await cloud.api.delete_resources(p_ids).catch(e => e);
@@ -64,12 +74,16 @@ const Product = module.exports = model('Product', (() => {
 
     p_schema.virtual("link").get(function() {
         const replace_matches = m => ["$"].includes(m) ? m : "-";
-        const name = this.name.replace(/\W/g, replace_matches).replace(/\-+/g, "-").replace(/^\W+|\W+$/, '');
+        const name = this.name.replace(/\W/g, replace_matches).replace(/\-+/g, "-").replace(/^\-|\-$/, '');
         return `/shop/product/${name}`.toLowerCase();
     });
 
     p_schema.virtual("main_images").get(function() {
         return this.units.map(unit => unit.main_image).filter(e => e);
+    });
+
+    p_schema.virtual("all_images").get(function() {
+        return this.units.map(unit => unit.images).flat().filter(e => e);
     });
 
     p_schema.pre("save", async function() {
@@ -79,6 +93,18 @@ const Product = module.exports = model('Product', (() => {
         if (found) throw Error("Cannot save product with the same name as another");
     });
 
+    p_schema.post("save", async function(unit, next) {
+        const test_path = !production ? "test/" : "";
+        const prefix = `simbaluxe/${test_path}products`;
+        const { resources } = await cloud.api.resources({ prefix, type: "upload", max_results: 500 });
+
+        const products = await Product.find();
+        const all_images = products.map(p => p.all_images).flat();
+        const p_ids = all_images.map(img => img.p_id);
+        const unsaved_p_ids = resources.map(r => r.public_id).filter(p_id => !p_ids.includes(p_id));
+        await cloud.api.delete_resources(unsaved_p_ids).catch(e => e);
+    });
+
     return p_schema;
 })());
 
@@ -86,8 +112,9 @@ Product._deleteMany = async query => {
     const products = await Product.find(query);
     const images = products.map(p => p.units).flat().map(u => u.images).flat();
     const p_ids = images.map(img => img.p_id);
+    const prefixes = p_ids.map(p_id => p_id.replace(/\-\d+$/, ""));
 
-    await cloud.api.delete_resources(p_ids).catch(e => e);
+    await Promise.allSettled(prefixes.map(p => cloud.api.delete_resources_by_prefix(p)));
     return await Product.deleteMany(query);
 }
 
@@ -104,8 +131,9 @@ Product.deleteUnitsByIds = async unit_ids => {
     const products = await Product.find({ "units._id": { $in: unit_ids } });
     const units = products.map(p => p.units).flat().filter(u => unit_ids.includes(u.id));
     const p_ids = units.map(u => u.images).flat().map(img => img.p_id);
+    const prefixes = p_ids.map(p_id => p_id.replace(/\-\d+$/, ""));
 
-    await cloud.api.delete_resources(p_ids).catch(e => null);
+    await Promise.allSettled(prefixes.map(p => cloud.api.delete_resources_by_prefix(p)));
 
     await each(products, (p, cb) => {
         p.units = p.units.filter(u => !unit_ids.includes(u.id));

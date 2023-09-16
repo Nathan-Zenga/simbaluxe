@@ -1,0 +1,28 @@
+<%- include ('partials/header', { pagename: "admin", title: "Admin | Register" }) -%>
+    <div class="container">
+        <form id="admin-activate-form" method="post" action="/admin/activate/<%- token %>">
+            <label>New Password *</label>
+            <input type="password" name="password" id="password" required>
+
+            <label>Confirm Password *</label>
+            <input type="password" name="password_confirm" id="password_confirm" required>
+
+            <input type="submit" value="SUBMIT">
+        </form>
+    </div>
+
+    <script>
+        $("#admin-activate-form").submit(function(e) {
+            e.preventDefault();
+            var btnController = new submitBtnController(this);
+            $.post(this.action, $(this).serializeArray(), function(result) {
+                e.target.reset();
+                location.href = result.href;
+            }).fail(function(err) {
+                Alert(err.responseText);
+            }).always(function() {
+                btnController.finish();
+            });
+        });
+    </script>
+<%- include ('partials/footer') -%>

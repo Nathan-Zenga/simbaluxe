@@ -1,0 +1,23 @@
+<%- include ('partials/header', { pagename: "admin", title: "Admin | Log in" }) -%>
+    <div class="container">
+        <form id="admin-login-form" class="form" action="/admin/login">
+            <label for="password">Password *</label>
+            <input id="password" class="form-control theme mb-4" type="password" name="password">
+
+            <button type="submit" class="btn btn-theme mt-4">Log in</button>
+        </form>
+    </div>
+
+    <script>
+        $("#admin-login-form").submit(function(e) {
+            e.preventDefault();
+            var btnControl = new submitBtnController(this, { progressMsg: "Logging in", ellipsis: true });
+            $.post(this.action, $(this).serializeArray(), function(res) {
+                location.href = res.redirect_to
+            }).fail(function(err, status) {
+                btnControl.finish();
+                Alert(err.responseText);
+            });
+        });
+    </script>
+<%- include ('partials/footer') -%>

@@ -2,16 +2,11 @@ const { model, Schema } = require('mongoose');
 Schema.Types.String.set('trim', true);
 Schema.Types.Number.set('default', 0);
 
-module.exports.Admin = model('Admin', (() => {
-    const schema = new Schema({
-        email: { type: String, index: true, required: true },
-        password: { type: String, required: true },
-        token_expiry_date: Date
-    });
-
-    schema.virtual("role").get(_ => "admin");
-    return schema;
-})());
+module.exports.Admin = model('Admin', new Schema({
+    email: { type: String, index: true, required: true },
+    password: { type: String, required: true },
+    token_expiry_date: Date
+}));
 
 module.exports.Order = model('Order', new Schema({
     reciept_link: { type: String, required: true },

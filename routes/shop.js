@@ -13,6 +13,7 @@ router.post('/cart/add', async (req, res) => {
     const product = await Product.findById(id).catch(e => null);
     const unit = product?.units.find(u => u.unit_description === style);
     if (!unit) return res.status(404).send("Product not found");
+    if (!unit.unit_stock_qty) return res.status(404).send("Product out of stock");
 
     const index = req.session.cart.findIndex(item => item.unit._id == unit.id);
     if (index != -1) {
@@ -35,7 +36,8 @@ router.post('/cart/add', async (req, res) => {
 router.post('/cart/remove', (req, res) => {
     res.locals.cart = req.session.cart = req.session.cart.filter(item => item.unit._id != req.body.id);
     const count = req.session.cart_count();
-    res.render("components/cart", (err, cartHtml) => res.send({ count, price_total: req.session.price_total(), cartHtml }));
+    const price_total = req.session.price_total();
+    res.render("components/cart", (err, cartHtml) => res.send({ count, price_total, cartHtml }));
 });
 
 router.post('/cart/change-quantity', async (req, res) => {
@@ -43,11 +45,11 @@ router.post('/cart/change-quantity', async (req, res) => {
     const item = req.session.cart.find(item => item.unit._id == id);
     if (!item) return res.status(404).send("Item not found in cart");
 
-    item.quantity = Math.min(parseInt(quantity), item.unit.unit_stock_qty);
+    const qty = item.quantity = Math.min(parseInt(quantity), item.unit.unit_stock_qty);
 
     const count = req.session.cart_count();
     const price_total = req.session.price_total();
-    res.render("components/cart", (err, cartHtml) => res.send({ count, price_total, qty: item.quantity, cartHtml }));
+    res.render("components/cart", (err, cartHtml) => res.send({ count, price_total, qty, cartHtml }));
 });
 
 module.exports = router;

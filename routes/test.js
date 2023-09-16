@@ -4,6 +4,7 @@ const SiteContent = require('../models/SiteContent');
 const fs = require('fs');
 const path = require('path');
 const testDataString = filename => fs.readFileSync(path.join(__dirname, `../test/files/${filename}`)).toString();
+const cloud = require('cloudinary').v2;
 
 router.use((req, res, next) => req.session.production ? res.redirect("/") : next());
 
@@ -69,6 +70,16 @@ router.get('/site/content/media/delete', async (req, res) => {
     try {
         const result = await SiteContent.deleteMedia(req.query.field);
         res.send(result);
+    } catch(e) {
+        console.error(e);
+        res.status(500).send(e.message);
+    }
+});
+
+router.get('/cloud/resources', async (req, res) => {
+    try {
+        const resources = await cloud.api.resources({ type: "upload", prefix: "simbaluxe/test/products/A_Good_Wig", max_results: 500 });
+        res.send(resources);
     } catch(e) {
         console.error(e);
         res.status(500).send(e.message);

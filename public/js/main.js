@@ -27,7 +27,7 @@ $(function() {
 
     window.Alert = function(message, closeable) {
         message = "<p>" + message.replace(/\r?\n/g, "</p><p>") + "</p>";
-        var $closeBtn = $("<button>").addClass("close-btn").attr({ type: "button", "aria-label": "Close" }).html('<span class="fal fa-times"></span>');
+        var $closeBtn = $("<button>").addClass("close-btn btn").attr({ type: "button", "aria-label": "Close" }).html('<span class="fal fa-times"></span>');
         var $toast = $("<div>").addClass("site-toast global text-center").html(message).prepend(closeable ? $closeBtn : "");
         Flash($toast.appendTo(document.body));
     }
@@ -41,7 +41,8 @@ $(function() {
         (aboveSection || belowSection) && $("html, body").animate({ scrollTop: $(section_id).offset().top }, 700);
     }
 
-    $("#nav-toggle, #nav-close").click(function() { $("#nav-section").toggleClass("show") });
+    $("#nav-toggle").click(function() { $("#nav-section").toggleClass("show") });
+    $("#nav-close").click(function() { $("#nav-section").removeClass("show") });
 
     $("#nav .link").click(function(e) {
         e.preventDefault();
@@ -54,26 +55,27 @@ $(function() {
         $(".nav-pills a[href='"+ this.value +"']").click()
     });
 
-    $(".clear-uploads").click(function(e) {
+    $(document).on("click", ".clear-uploads", function(e) {
         e.preventDefault();
-        $("#"+this.dataset.id).val("").change();
+        var $uploader = $(this).closest(".file-uploader");
+        $uploader.find("input:file").val("").change();
     });
 
-    $(".file-upload-container :file").change(function() {
+    $(document).on("change", ".file-uploader :file", function() {
         var files = this.files;
         var fieldname = this.dataset.fieldname;
-        var $container = $(this).closest(".file-upload-container");
-        var $image_url = $container.find("input[type=url]").attr("disabled", false).val("");
-        var $fileLabel = $container.find(".custom-file-label");
-        var initialLabelValue = $fileLabel.data("initial-value") || $fileLabel.text();
-        $fileLabel.data("initial-value", initialLabelValue).text(initialLabelValue);
-        $container.find("input:hidden").remove();
+        var $uploader = $(this).closest(".file-uploader");
+        var $image_url = $uploader.find("input[type=url]").attr("disabled", false).val("").trigger("input");
+        var $file_label = $uploader.find(".custom-file-label");
+        var initial_label_value = $file_label.data("initial-value") || $file_label.text();
+        $file_label.data("initial-value", initial_label_value).text(initial_label_value);
+        $uploader.find("input:hidden").remove();
         if (!files || !files.length) return;
-        $fileLabel.text("Loading...");
+        $file_label.text("Loading...");
         var $submitInput = $(this).closest("form").find(":submit").attr("disabled", true);
         async.each(files, function(file, cb) {
             var reader = new FileReader();
-            var $input = $("<input type='hidden' name='"+ fieldname +"'>").appendTo($container);
+            var $input = $("<input type='hidden' name='"+ fieldname +"'>").appendTo($uploader);
             reader.onerror = function() { cb((files.length > 1 ? "One or more images" : "Image") + " not found/valid") };
             reader.onload = function(e) {
                 var media = e.target.result.includes("image") ? new Image() : document.createElement("video");
@@ -84,12 +86,38 @@ $(function() {
             };
             reader.readAsDataURL(file)
         }, function(err) {
-            if (err) { $fileLabel.text(initialLabelValue); return Alert(err.message || err) }
-            var label_text = files.length > 1 ? files.length+" files selected" : files[0].name;
-            $fileLabel.text(label_text);
+            if (err) {
+                $file_label.text(initial_label_value);
+                $uploader.find(".clear-uploads").click();
+                return Alert(err.message || err, true)
+            }
+            var label_text = files[0].name + (files.length > 1 ? " + " + (files.length-1) + " more": "");
+            $file_label.text(label_text);
             $image_url.attr("disabled", true).val(label_text);
             $submitInput.attr("disabled", false);
         });
+    });
+
+    $(document).on("input", ".file-uploader input[type=url]", function() {
+        var $uploader = $(this).closest(".file-uploader");
+        $uploader.find("input:file").prop("disabled", !!this.value.trim());
+        $uploader.find("input:hidden").remove();
+
+    }).on("click", ".file-uploader-options button.add", function() {
+        var $uploader = $(this).closest(".file-uploader");
+        var $newUploader = $uploader.clone(true);
+        var inputFileID = $newUploader.find("input:file").attr("id").replace(/\-\-\d+$/, "");
+        var $file_label = $newUploader.find(".custom-file-label");
+        var initial_label_value = $file_label.data("initial-value");
+
+        $newUploader.find("input:file").attr("id", inputFileID + "--" + Date.now());
+        $newUploader.insertAfter($uploader).find(".clear-uploads").click();
+        initial_label_value && $file_label.data("initial-value", initial_label_value);
+
+    }).on("click", ".file-uploader-options button.remove", function() {
+        var $container = $(this).closest(".file-upload-container");
+        var moreThanOne = $container.find(".file-uploader").length > 1;
+        moreThanOne && $(this).closest(".file-uploader").remove();
     });
 
     window.cookies = Object.fromEntries(document.cookie.split(/; */).map(function(c) {
@@ -234,8 +262,10 @@ $(function() {
         $(this).closest(".shop-product-item").find(".product-opts-toast").stop().slideToggle();
     });
 
-    $(".site-toast .close-btn").click(function() {
-        $(this).closest(".site-toast").slideUp();
+    $(document).on("click", ".site-toast .close-btn", function() {
+        $(this).closest(".site-toast").slideUp(function() {
+            $(this).is(".global") && $(this).remove();
+        });
     });
 
     var transitionEndEvents = "transitionEnd oTransitionEnd msTransitionEnd transitionend webkitTransitionEnd";
@@ -247,4 +277,6 @@ $(function() {
         Flash($swipeInfo.prependTo("#cart-info-box"));
         $(this).off(transitionEndEvents);
     });
+
+    $("#social-links .simple-icon").on("error", function() { $(this).remove() });
 });

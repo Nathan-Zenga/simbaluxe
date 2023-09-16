@@ -2,8 +2,8 @@
 @import url('https://cdn.jsdelivr.net/gh/hung1001/font-awesome-pro@4cac1a6/css/all.css');
 @import url('https://fonts.googleapis.com/css2?family=Spartan:wght@200;300;500;600;700&family=Bodoni+Moda&family=Taprom&display=swap');
 
-@function color-primary   ($alpha: 100) { @return rgba(15, 15, 15, $alpha); }
-@function color-secondary ($alpha: 100) { @return rgba(25, 25, 25, $alpha); }
+@function color-primary   ($alpha: 100) { @return rgba(20, 20, 20, $alpha); }
+@function color-secondary ($alpha: 100) { @return rgba(30, 30, 30, $alpha); }
 @function color-tertiary  ($alpha: 100) { @return rgba(255, 211, 177, $alpha); }
 @function color-accent    ($alpha: 100) { @return rgba(190, 190, 190, $alpha); }
 
@@ -90,7 +90,17 @@ a:hover {
 }
 
 .btn {
-    border: none;
+    border-color: transparent!important;
+    color: color-accent();
+    transition: .5s color;
+
+    &:hover {
+        color: color-tertiary();
+    }
+
+    &.btn-danger {
+        background-color: rgb(172, 47, 59);
+    }
 }
 
 #sim .hamburger {

@@ -3,7 +3,7 @@ const { Admin } = require('../models/models');
 const bcrypt = require('bcrypt');
 const passport = require('passport');
 
-passport.use("local-login-admin", new Strategy({ usernameField: "email" }, async (email, password, done) => {
+passport.use("local-login-admin", new Strategy(async (email, password, done) => {
     try {
         const user = await Admin.findOne({ email });
         const match = await bcrypt.compare(password, user?.password || "");

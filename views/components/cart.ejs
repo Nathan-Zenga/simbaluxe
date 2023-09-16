@@ -6,7 +6,7 @@
     <div id="cart-items">
         <%_ cart.forEach(item => { _%>
         <div class="cart-item product-item row no-gutters">
-            <%_ if (item.unit.main_image) { _%>
+            <%_ if (item.unit.main_image?.url) { _%>
             <img class="bg-layer" src="<%= item.unit.main_image.url %>" alt="background layer image">
             <%_ } _%>
 
