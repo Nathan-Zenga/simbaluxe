@@ -53,7 +53,7 @@
                         <form class="form add-to-cart-form" action="/shop/cart/add">
                             <div class="options">
                                 <label for="product-style">Style</label>
-                                <select id="product-style" class="custom-select form-control product-style mb-4" name="style" required>
+                                <select id="product-style" class="custom-select form-control theme product-style mb-4" name="style" required>
                                     <option value="">-</option>
                                     <%_ product.units.slice().sort((a,b) => parseInt(a.unit_description) - parseInt(b.unit_description)).forEach(unit => { _%>
                                     <option value="<%= unit.unit_description %>"><%= unit.unit_description %></option>
@@ -61,7 +61,7 @@
                                 </select>
 
                                 <label for="product-quantity">Quantity</label>
-                                <select id="product-quantity" class="custom-select form-control product-quantity mb-4" name="quantity" required>
+                                <select id="product-quantity" class="custom-select form-control theme product-quantity mb-4" name="quantity" required>
                                     <%_ for (var i = 1; i <= 10; i++) { _%>
                                     <option value="<%= i %>"><%= i %></option>
                                     <%_ } _%>

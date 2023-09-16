@@ -74,7 +74,7 @@
                                                     <div class="row options">
                                                         <div class="col">
                                                             <label for="product-<%= product._id %>-style">Style</label>
-                                                            <select id="product-<%= product._id %>-style" class="custom-select form-control mb-4 product-style" name="style" required>
+                                                            <select id="product-<%= product._id %>-style" class="custom-select form-control theme mb-4 product-style" name="style" required>
                                                                 <option value="">-</option>
                                                                 <%_ product.units.slice().sort((a,b) => parseInt(a.unit_description) - parseInt(b.unit_description)).forEach(unit => { _%>
                                                                 <option value="<%= unit.unit_description %>"><%= unit.unit_description %></option>
@@ -84,7 +84,7 @@
 
                                                         <div class="col-md-4 pr-md-0">
                                                             <label for="product-<%= product._id %>-quantity">Quantity</label>
-                                                            <select id="product-<%= product._id %>-quantity" class="custom-select form-control mb-4 product-quantity" name="quantity" required>
+                                                            <select id="product-<%= product._id %>-quantity" class="custom-select form-control theme mb-4 product-quantity" name="quantity" required>
                                                                 <%_ for (var i = 1; i <= 10; i++) { _%>
                                                                 <option value="<%= i %>"><%= i %></option>
                                                                 <%_ } _%>
@@ -144,21 +144,21 @@
                     <div class="row">
                         <div class="col-sm">
                             <label for="name">Name *</label>
-                            <input class="form-control mb-4" type="text" id="name" name="name" required />
+                            <input class="form-control theme mb-4" type="text" id="name" name="name" required />
                         </div>
 
                         <div class="col-sm">
                             <label for="email">Email Address *</label>
-                            <input class="form-control mb-4" type="email" id="email" name="email" required />
+                            <input class="form-control theme mb-4" type="email" id="email" name="email" required />
                         </div>
                     </div>
                 </fieldset>
 
                 <label for="subject">Subject *</label>
-                <input class="form-control mb-4" type="text" id="subject" name="subject" required />
+                <input class="form-control theme mb-4" type="text" id="subject" name="subject" required />
 
                 <label for="message">Message *</label>
-                <textarea class="form-control mb-4" id="message" name="message" required></textarea>
+                <textarea class="form-control theme mb-4" id="message" name="message" required></textarea>
 
                 <input class="btn btn-theme mt-4" type="submit" value="Send" />
             </form>
