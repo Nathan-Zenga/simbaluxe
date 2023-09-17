@@ -147,6 +147,11 @@
                             </div>
                         </fieldset>
 
+                        <div class="form-check my-4">
+                            <input type="checkbox" class="form-check-input" id="remove_product_images" name="remove_all_images" value="true">
+                            <label class="form-check-label ml-2" for="remove_product_images">Remove all saved images?</label>
+                        </div>
+
                         <label for="product-image-file-edit">Images</label>
                         <fieldset class="file-upload-container">
                             <div class="file-uploader mb-5 row no-gutters">
@@ -193,7 +198,12 @@
                     </form>
 
                     <form action="/shop/product/delete" class="form remove-form">
-                        <fieldset>
+                        <div class="form-check mb-3">
+                            <input type="checkbox" class="form-check-input select-all" id="select-all-products">
+                            <label class="form-check-label ml-2" for="select-all-products">Select all</label>
+                        </div>
+
+                        <fieldset class="items">
                         <%_ products.forEach((p, i) => { _%>
                             <div class="form-check mb-3 product-checkbox search-item">
                                 <%_ const input_id = `product-unit-${i+1}` _%>
@@ -353,8 +363,12 @@
         });
     });
 
-    $(".remove-form input[type=checkbox]").change(function() {
+    $(".remove-form input[type=checkbox]").not(".select-all").change(function() {
         $(this).closest(".form-check").next(".form-check-sublist").find("input[type=checkbox]:visible").prop("checked", this.checked);
+    });
+
+    $(".remove-form .select-all").change(function() {
+        $(this).closest(".remove-form").find(".items input[type=checkbox]").prop("checked", this.checked).change();
     });
 
     $(".filter-search-input").on("input", function(e) {
@@ -365,6 +379,10 @@
         }).show();
 
         $items.filter(":visible").closest(".form-check-sublist").prev(".search-item").show();
+    });
+
+    $("#remove_product_images").change(function() {
+        $(this).closest("form").find(".file-upload-container").prop("disabled", this.checked);
     });
 </script>
 <%- include ('partials/footer') -%>

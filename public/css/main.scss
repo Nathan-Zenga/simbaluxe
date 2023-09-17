@@ -45,7 +45,9 @@ header {
     }
 
     #nav-section {
+        position: relative;
         text-align: right;
+        z-index: 5;
     }
 
     #nav-toggle {

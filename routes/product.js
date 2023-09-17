@@ -23,7 +23,7 @@ router.post('/create', isAuthed, async (req, res) => {
 });
 
 router.post('/update', isAuthed, async (req, res) => {
-    const { product_id, unit_id, name, info, colour, length_inches, size, price, unit_stock_qty, image_file, image_url } = req.body;
+    const { product_id, unit_id, name, info, colour, length_inches, size, price, unit_stock_qty, image_file, image_url, remove_all_images } = req.body;
     const images = [image_file, image_url].flat().filter(e => e).map(url => ({ url }));
     try {
         const product = await Product.findById(product_id);
@@ -44,7 +44,7 @@ router.post('/update', isAuthed, async (req, res) => {
                 if (size) unit.size = size;
                 if (price) unit.price = price;
                 if (unit_stock_qty) unit.unit_stock_qty = unit_stock_qty;
-                unit.images = images;
+                if (images.length || remove_all_images == "true") unit.images = images;
             }
         }
 
