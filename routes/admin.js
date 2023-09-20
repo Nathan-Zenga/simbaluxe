@@ -1,16 +1,18 @@
 const router = require('express').Router();
 const crypto = require('crypto');
-const { Admin } = require('../models/models');
+const { Admin, ShippingMethod } = require('../models/models');
 const Product = require('../models/Product');
 const SiteContent = require('../models/SiteContent');
 const isAuthed = require('../modules/auth-check');
 const passport = require('../config/passport');
 const MailTransporter = require('../modules/mail-transporter');
+const { delivery_est_units } = require('../config/constants');
 
 router.get('/', isAuthed, async (req, res) => {
     const products = await Product.find();
     const content = await SiteContent.find();
-    res.render('admin', { products, content });
+    const shipping = await ShippingMethod.find();
+    res.render('admin', { products, content, shipping, delivery_est_units });
 });
 
 router.get('/login', (req, res) => {

@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const { STRIPE_SK, STRIPE_PK } = process.env;
 const Stripe = new (require('stripe').Stripe)(STRIPE_SK);
-const { Order } = require('../models/models');
+const { Order, ShippingMethod } = require('../models/models');
 const Product = require('../models/Product');
 const MailTransporter = require('../modules/mail-transporter');
 const checkout_cancel = require('../modules/checkout-cancel');
@@ -15,6 +15,7 @@ router.get('/', async (req, res) => {
 
 router.post("/session/create", async (req, res) => {
     const { firstname, lastname, email, address_l1, address_l2, city, state, country: country_name, postcode } = req.body;
+    if (req.session.cart_count() == 0) return res.status(400).send("Cannot continue checkout:\nyour cart is empty");
 
     const field_check = { firstname, lastname, email, "address line 1": address_l1, city, country: country_name, "post / zip code": postcode };
     const missing_fields = Object.keys(field_check).filter(k => !field_check[k]);
@@ -41,12 +42,31 @@ router.post("/session/create", async (req, res) => {
             quantity: item.quantity
         }));
 
+        const shipping_method = await ShippingMethod.findOne();
+        const shipping_options = [shipping_method].filter(e => e).map(method => ({
+            shipping_rate_data: {
+                type: "fixed_amount",
+                fixed_amount: { amount: method.fee, currency: "gbp" },
+                display_name: "Delivery",
+                delivery_estimate: {
+                    minimum: {
+                        unit: method.delivery_estimate.minimum.unit.toLowerCase().replace(/ /g, "_"),
+                        value: method.delivery_estimate.minimum.value
+                    },
+                    maximum: {
+                        unit: method.delivery_estimate.maximum.unit.toLowerCase().replace(/ /g, "_"),
+                        value: method.delivery_estimate.maximum.value
+                    }
+                }
+            }
+        }));
+
         const session = await Stripe.checkout.sessions.create({
             payment_method_types: ["card"],
             customer: customer.id,
             payment_intent_data: { description: "Simbaluxe Online Store Purchase" },
             line_items,
-            shipping_options: [],
+            shipping_options,
             mode: "payment",
             success_url: res.locals.location_origin + "/shop/checkout/session/complete",
             cancel_url: res.locals.location_origin + "/shop/checkout/cancel"

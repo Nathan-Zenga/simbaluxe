@@ -1,6 +1,8 @@
 const router = require('express').Router();
 const MailTransporter = require('../modules/mail-transporter');
 const Product = require('../models/Product');
+const { ShippingMethod } = require('../models/models');
+const isAuthed = require('../modules/auth-check');
 // const recaptcha = require('../modules/recaptcha');
 const { DOMAIN_EMAIL, RECAPTCHA_SITE_KEY } = process.env;
 
@@ -20,6 +22,20 @@ router.post('/contact/mail/send', /*recaptcha,*/ async (req, res) => {
         if (err) return res.status(500).send(err.message);
         res.send("Email sent");
     });
+});
+
+router.post('/shipping/fee/update', isAuthed, async (req, res) => {
+    const { fee, min_value, min_unit, max_value, max_unit } = req.body;
+    const shipping = await ShippingMethod.findOne() || new ShippingMethod();
+
+    try {
+        shipping.fee = fee;
+        shipping.delivery_estimate.minimum.value = min_value;
+        shipping.delivery_estimate.maximum.value = max_value;
+        shipping.delivery_estimate.minimum.unit = min_unit;
+        shipping.delivery_estimate.maximum.unit = max_unit;
+        await shipping.save(); res.send("Shipping method details saved!");
+    } catch (err) { res.status(400).send(err.message) }
 });
 
 module.exports = router;

@@ -3,6 +3,7 @@
     <div class="nav nav-pills justify-content-center mb-5">
         <a class="nav-link active" data-toggle="pill" href="#products">Products</a>
         <a class="nav-link" data-toggle="pill" href="#site-content">Site contents</a>
+        <a class="nav-link" data-toggle="pill" href="#shipping">Shipping</a>
     </div>
 
     <div class="tab-content">
@@ -319,6 +320,58 @@
                 </div>
             </div>
 
+        </div>
+
+        <div id="shipping" class="tab-pane fade">
+            <form action="/shipping/fee/update" class="form">
+                <label for="shipping-fee">Fee</label>
+                <input class="form-control theme mb-5" type="number" name="fee" id="shipping-fee" value="<%= shipping[0]?.fee %>" required>
+
+                <label>Delivery Estimates</label>
+                <fieldset class="delivery-estimates mb-5">
+                    <div class="row mb-4">
+                        <div class="col-3">
+                            <label>Between:</label>
+                        </div>
+                        <div class="col">
+                            <div class="input-group">
+                                <%_ const delivery_estimate_min = shipping[0]?.delivery_estimate.minimum.value || 1 _%>
+                                <input class="form-control theme mr-3" type="number" name="min_value" id="min_value" min="1" value="<%= delivery_estimate_min %>" required>
+                                <select class="form-control theme custom-select" name="min_unit" id="min_unit" required>
+                                    <%_ delivery_est_units.forEach(unit => {
+                                        const selected = unit == "business day" ? " selected" : "" _%>
+                                    <option value="<%= unit %>"<%- selected %>>
+                                        <%= unit.replace(/^./, m => m.toUpperCase()) %>s
+                                    </option>
+                                    <%_ }) _%>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-3">
+                            <label>To:</label>
+                        </div>
+                        <div class="col">
+                            <div class="input-group">
+                                <%_ const delivery_estimate_max = shipping[0]?.delivery_estimate.maximum.value || 1 _%>
+                                <input class="form-control theme mr-3" type="number" name="max_value" id="max_value" min="1" value="<%= delivery_estimate_max %>" required>
+                                <select class="form-control theme custom-select" name="max_unit" id="max_unit" required>
+                                    <%_ delivery_est_units.forEach(unit => {
+                                        const selected = unit == "business day" ? " selected" : "" _%>
+                                    <option value="<%= unit %>"<%- selected %>>
+                                        <%= unit.replace(/^./, m => m.toUpperCase()) %>s
+                                    </option>
+                                    <%_ }) _%>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <button class="btn btn-theme mt-4" type="submit">Update</button>
+            </form>
         </div>
     </div>
 </div>
