@@ -41,7 +41,7 @@ const Product = module.exports = model('Product', (() => {
                 const promises = unit.images.filter(img => !isDataURL(img.url)).map(img => axios.get(img.url));
                 await Promise.all(promises).catch(e => { throw new Error("One or more selected image sources not found / valid") });
 
-                const results = await map(unit.images, (image, cb) => {
+                unit.images = await map(unit.images, (image, cb) => {
                     const test_path = !production ? "test/" : "";
                     const public_id = `simbaluxe/${test_path}products/${unit.$parent().name}_${unit.unit_description}_${Date.now()}`.replace(/[ ?&#\\%<>+]/g, "_");
                     cloud.uploader.upload(image.url, { public_id }, (err, result) => {
@@ -51,8 +51,7 @@ const Product = module.exports = model('Product', (() => {
                     });
                 });
 
-                unit.images = results;
-                unit.main_image_index = Math.min(unit.main_image_index, results.length-1);
+                unit.main_image_index = Math.min(unit.main_image_index, unit.images.length-1);
                 unit.main_image_index = Math.max(unit.main_image_index, 0);
             }
             next();
@@ -93,7 +92,7 @@ const Product = module.exports = model('Product', (() => {
         if (found) throw Error("Cannot save product with the same name as another");
     });
 
-    p_schema.post("save", async function(unit, next) {
+    p_schema.post("save", async function() {
         const test_path = !production ? "test/" : "";
         const prefix = `simbaluxe/${test_path}products`;
         const { resources } = await cloud.api.resources({ prefix, type: "upload", max_results: 500 });
@@ -112,7 +111,7 @@ Product._deleteMany = async query => {
     const products = await Product.find(query);
     const images = products.map(p => p.units).flat().map(u => u.images).flat();
     const p_ids = images.map(img => img.p_id);
-    const prefixes = p_ids.map(p_id => p_id.replace(/\-\d+$/, ""));
+    const prefixes = [...new Set(p_ids.map(p_id => p_id.replace(/\-\d+$/, "")))];
 
     await Promise.allSettled(prefixes.map(p => cloud.api.delete_resources_by_prefix(p)));
     return await Product.deleteMany(query);
@@ -131,7 +130,7 @@ Product.deleteUnitsByIds = async unit_ids => {
     const products = await Product.find({ "units._id": { $in: unit_ids } });
     const units = products.map(p => p.units).flat().filter(u => unit_ids.includes(u.id));
     const p_ids = units.map(u => u.images).flat().map(img => img.p_id);
-    const prefixes = p_ids.map(p_id => p_id.replace(/\-\d+$/, ""));
+    const prefixes = [...new Set(p_ids.map(p_id => p_id.replace(/\-\d+$/, "")))];
 
     await Promise.allSettled(prefixes.map(p => cloud.api.delete_resources_by_prefix(p)));
 

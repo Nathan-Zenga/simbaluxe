@@ -271,19 +271,38 @@
 
                 <div id="platforms" class="tab-pane fade">
                     <form action="/site/content/platform-links/update" class="form">
-                        <fieldset>
-                        <%_ content[0]?.platforms.forEach(platform => { _%>
-                            <div class="input-group mb-5">
-                                <select name="platform_name" class="form-control theme mr-3 custom-select" required>
-                                    <option value="">-</option>
-                                    <%_ platforms.forEach(p => {
-                                        const selected = platform.name === p ? "selected" : "" _%>
-                                    <option value="<%= p %>" <%- selected %>><%= p %></option>
-                                    <%_ }) _%>
-                                </select>
-                                <input name="platform_url" type="text" class="form-control theme" value="<%= platform.url %>" required>
+                        <fieldset class="platform-item-container">
+                            <legend class="text-center text-muted small mb-4">
+                                Note: leave all fields empty if you don't want to add any
+                            </legend>
+
+                            <%_ const platforms_list = content[0]?.platforms.length ? content[0].platforms : [{}];
+                            platforms_list.forEach(platform => { _%>
+                            <div class="platform-item mb-5">
+                                <div class="input-group">
+                                    <select name="platform_name" class="form-control theme mr-3 custom-select">
+                                        <option value="">-</option>
+                                        <%_ platforms.forEach(p => {
+                                            const selected = platform.name === p ? "selected" : "" _%>
+                                        <option value="<%= p %>" <%- selected %>><%= p %></option>
+                                        <%_ }) _%>
+                                    </select>
+                                    <input name="platform_url" type="text" class="form-control theme" value="<%= platform.url %>">
+                                </div>
+
+                                <div class="text-right mt-3 platform-item-options">
+                                    <button type="button" class="btn add">
+                                        <i class="fal fa-plus"></i>
+                                        <span class="sr-only">Add</span>
+                                    </button>
+
+                                    <button type="button" class="btn remove">
+                                        <i class="fal fa-trash"></i>
+                                        <span class="sr-only">Delete</span>
+                                    </button>
+                                </div>
                             </div>
-                        <%_ }) _%>
+                            <%_ }) _%>
                         </fieldset>
 
                         <button class="btn btn-theme" type="submit">Update</button>
@@ -357,7 +376,7 @@
         $.post(this.action, $(this).serializeArray(), function(message) {
             Alert(message);
         }).fail(function(err) {
-            Alert(err.responseText);
+            Alert(err.responseText, true);
         }).always(function() {
             btnControl.finish();
         });

@@ -35,14 +35,12 @@ router.post('/platform-links/update', isAuthed, async (req, res) => {
     const content = await SiteContent.findOne() || new SiteContent();
 
     const platform_names = [platform_name].flat().filter(e => e);
-    const platform_urls = [platform_url].flat();
-    if (platform_names.length) {
-        if (platform_names.length != platform_urls.length) return res.status(400).send("Number of specified social media names + URLs don't match");
-        content.platforms = platform_names.reduce((arr, name, i) => {
-            platform_urls[i] && arr.push({ name, url: platform_urls[i] });
-            return arr;
-        }, []);
-    }
+    const platform_urls = [platform_url].flat().filter(e => e);
+    if (platform_names.length != platform_urls.length) return res.status(400).send("Name or URL missing for one (or more) of your social media items");
+    content.platforms = platform_names.reduce((arr, name, i) => {
+        arr.push({ name, url: platform_urls[i] });
+        return arr;
+    }, []);
 
     try {
         await content.save();

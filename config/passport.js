@@ -7,7 +7,7 @@ passport.use("local-login-admin", new Strategy(async (email, password, done) => 
     try {
         const user = await Admin.findOne({ email });
         const match = await bcrypt.compare(password, user?.password || "");
-        if (!user) return done(null, "to_activate", { message: "Verification email sent" });
+        if (!user) return done(null, "to_activate", { message: "Verification email sent to " + email });
         if (!match) return done(null, null, { message: "Invalid password" });
         done(null, user);
     } catch (err) { done(err) }

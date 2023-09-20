@@ -279,4 +279,17 @@ $(function() {
     });
 
     $("#social-links .simple-icon").on("error", function() { $(this).remove() });
+
+    $(document).on("click", ".platform-item-options button.add", function() {
+        var $item = $(this).closest(".platform-item");
+        var $newItem = $item.clone(true);
+        $newItem.find(":input").val("").end().insertAfter($item);
+
+    }).on("click", ".platform-item-options button.remove", function() {
+        var $container = $(this).closest(".platform-item-container");
+        var $item = $(this).closest(".platform-item");
+        var moreThanOne = $container.find(".platform-item").length > 1;
+        !moreThanOne && $item.find("button.add").click();
+        $item.remove();
+    });
 });
