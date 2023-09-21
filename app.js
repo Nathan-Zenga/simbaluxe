@@ -9,7 +9,7 @@ const MemoryStore = require('memorystore')(session);
 const passport = require('passport');
 const cloud = require('cloudinary').v2;
 const { OAuth2 } = (require("googleapis")).google.auth;
-const { platforms, product_sizes, placeholder_product_image, subject_options } = require('./config/constants');
+const { platforms, product_sizes, placeholder_product_image, subject_options, max_quantity_option } = require('./config/constants');
 const SiteContent = require('./models/SiteContent');
 const MailTransporter = require('./modules/mail-transporter');
 const visitor = require('./modules/visitor-info');
@@ -55,6 +55,7 @@ app.use(async (req, res, next) => { // global variables
     res.locals.placeholder_product_image = placeholder_product_image;
     res.locals.product_sizes = product_sizes;
     res.locals.subject_options = subject_options;
+    res.locals.max_quantity_option = max_quantity_option;
     res.locals.site_content = await SiteContent.findOne();
 
     if (!req.session.checkout_session_id || /^\/shop\/checkout\/(cancel|session\/complete)$/.test(req.originalUrl)) return next();

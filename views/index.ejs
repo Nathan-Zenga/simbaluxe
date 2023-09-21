@@ -13,18 +13,18 @@
             <%_ } else { _%>
             <div id="product-carousel" class="carousel slide" data-interval="false">
                 <%_
-                    const productsPaginated = paginate(products, 2);
-                    if (productsPaginated.length > 1) {
+                    const products_paginated = paginate(products, 2);
+                    if (products_paginated.length > 1) {
                 _%>
                 <ol class="carousel-indicators">
-                    <%_ productsPaginated.forEach((page, i) => { _%>
+                    <%_ products_paginated.forEach((page, i) => { _%>
                     <li data-target="#product-carousel" data-slide-to="<%= i %>" class="<%= !i ? 'active' : '' %>"></li>
                     <%_ }) _%>
                 </ol>
                 <%_ } _%>
 
                 <div class="carousel-inner">
-                    <%_ productsPaginated.forEach((page, i) => { _%>
+                    <%_ products_paginated.forEach((page, i) => { _%>
                     <div class="carousel-item <%= !i ? 'active' : '' %>">
                         <div class="container">
                             <div class="row justify-content-center">
@@ -85,7 +85,7 @@
                                                         <div class="col-md-4 pr-md-0">
                                                             <label for="product-<%= product._id %>-quantity">Quantity</label>
                                                             <select id="product-<%= product._id %>-quantity" class="custom-select form-control theme mb-4 product-quantity" name="quantity" required>
-                                                                <%_ for (var i = 1; i <= 10; i++) { _%>
+                                                                <%_ for (var i = 1; i <= max_quantity_option; i++) { _%>
                                                                 <option value="<%= i %>"><%= i %></option>
                                                                 <%_ } _%>
                                                             </select>
@@ -112,7 +112,7 @@
                     <%_ }) _%>
                 </div>
 
-                <%_ if (productsPaginated.length > 1) { _%>
+                <%_ if (products_paginated.length > 1) { _%>
                 <button class="carousel-control-prev" type="button" data-target="#product-carousel" data-slide="prev">
                     <span class="fal fa-angle-left" aria-hidden="true"></span>
                     <span class="sr-only">Previous</span>

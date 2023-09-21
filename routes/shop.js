@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const Product = require('../models/Product');
+const { max_quantity_option } = require('../config/constants');
 
 router.post('/cart/add', async (req, res) => {
     const { id, style, quantity: qty } = req.body;
@@ -14,19 +15,23 @@ router.post('/cart/add', async (req, res) => {
     const unit = product?.units.find(u => u.unit_description === style);
     if (!unit) return res.status(404).send("Product not found");
     if (!unit.unit_stock_qty) return res.status(404).send("Product out of stock");
+    if (quantity > max_quantity_option) return res.status(400).send(`You can only select up to ${max_quantity_option} at a time.`);
+    if (quantity > unit.unit_stock_qty) return res.status(400).send(`Only ${unit.unit_stock_qty} item(s) left in stock.\nPlease adjust the quantity.`);
 
     const index = req.session.cart.findIndex(item => item.unit._id == unit.id);
+    const max_quantity = Math.min(max_quantity_option, unit.unit_stock_qty);
+
     if (index != -1) {
         const item = req.session.cart[index];
         const new_quantity = item.quantity + quantity;
         item.unit.quantity = unit.unit_stock_qty;
-        item.quantity = Math.min(new_quantity, unit.unit_stock_qty);
+        item.quantity = Math.min(new_quantity, max_quantity);
     } else {
         req.session.cart.push({
             product_id: id,
             name: product.name,
             unit: unit.toObject({ virtuals: true }),
-            quantity: Math.min(quantity, unit.unit_stock_qty),
+            quantity: Math.min(quantity, max_quantity),
             link: product.link
         });
     }
@@ -45,6 +50,8 @@ router.post('/cart/change-quantity', async (req, res) => {
     const { id, quantity } = req.body;
     const item = req.session.cart.find(item => item.unit._id == id);
     if (!item) return res.status(404).send("Item not found in cart");
+    if (quantity > max_quantity_option) return res.status(400).send(`You can only select up to ${max_quantity_option} at a time.`);
+    if (quantity > item.unit.unit_stock_qty) return res.status(400).send(`Only ${item.unit.unit_stock_qty} item(s) left in stock.\nPlease adjust the quantity.`);
 
     const qty = item.quantity = Math.min(parseInt(quantity), item.unit.unit_stock_qty);
 

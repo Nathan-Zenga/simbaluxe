@@ -29,7 +29,7 @@
                         <form class="qty-change-form" action="/shop/cart/change-quantity">
                             <label for="product-quantity" class="sr-only">Quantity</label>
                             <select class="custom-select product-quantity" name="quantity" required>
-                                <%_ for (var i = 1; i <= item.unit.unit_stock_qty; i++) {
+                                <%_ for (var i = 1; i <= max_quantity_option; i++) {
                                     const selected = i == item.quantity ? 'selected' : ''; _%>
                                 <option value="<%= i %>" <%- selected %>><%= i %></option>
                                 <%_ } _%>

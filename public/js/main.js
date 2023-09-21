@@ -234,7 +234,6 @@ $(function() {
         })
     }).find(".product-style").change(function(e) {
         var $form = $(e.target).closest("form");
-        var $qtyField = $form.find(".product-quantity");
         $.post("/shop/product/get-price", $form.serializeArray(), function(res) {
             var priceFormatted = "£" + parseFloat(res.price).toFixed(2);
             var html = "<span class='small font-weight-light d-block d-sm-inline'>Unit price:</span>";
@@ -242,16 +241,8 @@ $(function() {
 
             html = $("#product-item-full").length ? "Unit price: <span>" + priceFormatted + "</span>" : html;
             $form.find(".price-calculated").html(res.price ? html : "");
-
-            var currentValue = parseInt($qtyField.val());
-            currentValue = Math.min(currentValue, res.stock_qty);
-            $qtyField.html(Array.apply(null, Array(res.stock_qty)).map(function(e, i) {
-                var selected = currentValue == i+1 ? "selected" : "";
-                return `<option value="${i+1}" ${selected}>${i+1}</option>`
-            }));
         }).fail(function(err) {
             $form.find(".price-calculated").html("");
-            $qtyField.html('<option value="1">1</option>');
             err.responseText && Alert(err.responseText);
         })
     });
