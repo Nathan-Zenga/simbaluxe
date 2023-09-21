@@ -325,7 +325,7 @@
         <div id="shipping" class="tab-pane fade">
             <form action="/shipping/fee/update" class="form">
                 <label for="shipping-fee">Fee</label>
-                <input class="form-control theme mb-5" type="number" name="fee" id="shipping-fee" value="<%= shipping[0]?.fee %>" required>
+                <input class="form-control theme mb-5" type="number" min="0" name="fee" id="shipping-fee" value="<%= shipping[0]?.fee %>" required>
 
                 <label>Delivery Estimates</label>
                 <fieldset class="delivery-estimates mb-5">

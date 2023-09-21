@@ -36,7 +36,7 @@ app.use(session({ // express session
     name: 'sesh' + require("crypto").randomBytes(20).toString("hex"),
     saveUninitialized: true,
     resave: true,
-    cookie: { secure: 'auto' },
+    cookie: { secure: 'auto', maxAge: 1000 * 60 * 60 * 12 },
     store: new MemoryStore({ checkPeriod: 1000 * 60 * 60 * 12 })
 }));
 
@@ -49,7 +49,6 @@ app.use(async (req, res, next) => { // global variables
     res.locals.url = req.originalUrl;
     res.locals.location_origin = MailTransporter.location_origin = `${req.protocol}://${req.headers.host}`;
     res.locals.cart = req.session.cart = Array.isArray(req.session.cart) ? req.session.cart : [];
-    res.locals.cart_count = req.session.cart_count = () => req.session.cart.reduce((p, c) => p + c.quantity, 0);
     res.locals.price_total = req.session.price_total = () => req.session.cart.reduce((p, c) => p + (c.unit.price * c.quantity), 0);
     res.locals.paginate = paginate;
     res.locals.platforms = platforms;
@@ -71,7 +70,7 @@ app.use('/site/content', require('./routes/site-content'));
 app.use('/test', require('./routes/test'));
 
 app.get("*", (req, res) => {
-    const status = ![200, 404].includes(res.statusCode) ? res.statusCode : 404;
+    const status = [200, 404].includes(res.statusCode) ? 404 : res.statusCode;
     const html = `<h1>PAGE ${res.statusCode === 404 ? "IN CONSTRUCTION" : "NOT FOUND"}</h1>`;
     res.status(status).render('error', { html });
 });

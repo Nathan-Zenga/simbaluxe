@@ -40,6 +40,10 @@ header {
     width: 100vw;
     transition: .4s background-color;
 
+    .container {
+        max-width: 1500px;
+    }
+
     &.bg-opaque {
         background-color: color-primary(.75);
     }

@@ -19,6 +19,7 @@ router.post('/cart/add', async (req, res) => {
     if (index != -1) {
         const item = req.session.cart[index];
         const new_quantity = item.quantity + quantity;
+        item.unit.quantity = unit.unit_stock_qty;
         item.quantity = Math.min(new_quantity, unit.unit_stock_qty);
     } else {
         req.session.cart.push({
@@ -30,12 +31,12 @@ router.post('/cart/add', async (req, res) => {
         });
     }
 
-    res.render("components/cart", (err, cartHtml) => res.send({ count: req.session.cart_count(), cartHtml }));
+    res.render("components/cart", (err, cartHtml) => res.send({ count: req.session.cart.length, cartHtml }));
 });
 
 router.post('/cart/remove', (req, res) => {
     res.locals.cart = req.session.cart = req.session.cart.filter(item => item.unit._id != req.body.id);
-    const count = req.session.cart_count();
+    const count = req.session.cart.length;
     const price_total = req.session.price_total();
     res.render("components/cart", (err, cartHtml) => res.send({ count, price_total, cartHtml }));
 });
@@ -47,7 +48,7 @@ router.post('/cart/change-quantity', async (req, res) => {
 
     const qty = item.quantity = Math.min(parseInt(quantity), item.unit.unit_stock_qty);
 
-    const count = req.session.cart_count();
+    const count = req.session.cart.length;
     const price_total = req.session.price_total();
     res.render("components/cart", (err, cartHtml) => res.send({ count, price_total, qty, cartHtml }));
 });

@@ -9,13 +9,13 @@ const number_separator_regx = /\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g;
 const countries = require("../modules/country-list");
 
 router.get('/', async (req, res) => {
-    if (req.session.cart_count() == 0) return res.redirect(req.get("referrer"));
+    if (!req.session.cart.length) return res.redirect(req.get("referrer"));
     res.render("checkout", { countries })
 });
 
 router.post("/session/create", async (req, res) => {
     const { firstname, lastname, email, address_l1, address_l2, city, state, country: country_name, postcode } = req.body;
-    if (req.session.cart_count() == 0) return res.status(400).send("Cannot continue checkout:\nyour cart is empty");
+    if (!req.session.cart.length) return res.status(400).send("Cannot continue checkout:\nyour cart is empty");
 
     const field_check = { firstname, lastname, email, "address line 1": address_l1, city, country: country_name, "post / zip code": postcode };
     const missing_fields = Object.keys(field_check).filter(k => !field_check[k]);
