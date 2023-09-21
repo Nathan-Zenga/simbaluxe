@@ -34,6 +34,8 @@ body {
     }
 }
 
+$xxl-breakpoint-max-width: 1500px;
+
 header {
     padding: 35px;
     z-index: 100;
@@ -41,7 +43,7 @@ header {
     transition: .4s background-color;
 
     .container {
-        max-width: 1500px;
+        max-width: $xxl-breakpoint-max-width;
     }
 
     &.bg-opaque {
@@ -310,29 +312,30 @@ footer {
     height: 1em;
 }
 
+#to-top-container {
+    max-width: $xxl-breakpoint-max-width;
+    padding-left: 30px;
+    padding-right: 30px;
+}
+
 #to-top {
     position: fixed;
-    display: block;
-    right: 30px;
     bottom: 40px;
     line-height: 1;
     background-color: color-secondary();
     font-size: 3em;
     width: 0;
     height: 0;
-    border-radius: 100px;
+    border-radius: 1000px;
     z-index: 400;
     opacity: 0;
     transition: width 0s .4s, height 0s .4s, opacity .5s;
     overflow: hidden;
+    @include vendorProp(transform, translateX(-100%));
 
-    > span {
-        position: absolute;
-        display: block;
-        top: 50%;
-        width: 100%;
-        @include vendorProp(transform, translateY(-50%));
-        text-align: center;
+    &:not(.show) {
+        padding: 0;
+        border: 0;
     }
 
     &.show {
