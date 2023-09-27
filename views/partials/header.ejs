@@ -29,34 +29,37 @@
 <body id="<%= typeof pagename != 'undefined' && pagename ? pagename+'-page' : '' %>">
     <header>
         <div class="container px-0">
-        <div class="row no-gutters">
-            <section id="logo-section" class="col">
-                <a id="logo" href="/">Simbaluxe</a>
-            </section>
+            <div class="row no-gutters">
+                <section id="logo-section" class="col">
+                    <a id="logo" href="/">Simbaluxe</a>
+                </section>
 
-            <section id="cart-section" class="col-sm-1 col-2 order-lg-3">
-                <a id="cart-icon" class="fal fa-shopping-basket">
+                <section id="cart-section" class="col-sm-1 col-2 order-lg-3">
+                    <a id="cart-icon" class="fal fa-shopping-basket">
                         <%_ const total_count = cart.length;
                         const show = total_count > 0 ? "show" : "" _%>
-                    <span id="cart-count" class="<%= show %>"><%= total_count %></span>
-                </a>
+                        <span id="cart-count" class="<%= show %>"><%= total_count %></span>
+                    </a>
 
-                <div id="cart-panel">
-                <%- include ('../components/cart') -%>
-                </div>
-            </section>
+                    <div id="cart-panel">
+                        <%- include ('../components/cart') -%>
+                    </div>
+                </section>
 
-            <section id="nav-section" class="col-2 col-md-1 col-lg order-lg-2">
-                <a id="nav-toggle" class="mb-view-lg" role="button">Menu</a>
-                <nav id="nav">
-                    <a id="nav-close" class="mb-view-lg">&times;</a>
-                    <a class="link" href="/shop">Shop</a>
-                            <%_ if (site_content?.about_info) { _%>
-                    <a class="link" href="/about">Our Story</a>
-                            <%_ } _%>
-                    <a class="link" href="/contact">Contact</a>
-                </nav>
-            </section>
+                <section id="nav-section" class="col-2 col-md-1 col-lg order-lg-2">
+                    <a id="nav-toggle" class="mb-view-lg" role="button">Menu</a>
+                    <nav id="nav">
+                        <a id="nav-close" class="mb-view-lg">&times;</a>
+                        <a class="link" href="/shop">Shop</a>
+                        <%_ if (site_content?.about_info) { _%>
+                        <a class="link" href="/about">Our Story</a>
+                        <%_ } _%>
+                        <a class="link" href="/contact">Contact</a>
+                        <%_ if (user) { _%>
+                        <a class="link btn btn-theme" href="/logout" style="padding-bottom: 3px">Logout</a>
+                        <%_ } _%>
+                    </nav>
+                </section>
             </div>
         </div>
     </header>

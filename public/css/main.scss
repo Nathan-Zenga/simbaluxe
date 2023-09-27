@@ -314,8 +314,9 @@ footer {
 
 #to-top-container {
     max-width: $xxl-breakpoint-max-width;
-    padding-left: 30px;
-    padding-right: 30px;
+    padding: 0 30px;
+    margin: 0 auto;
+    text-align: right;
 }
 
 #to-top {

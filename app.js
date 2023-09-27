@@ -45,6 +45,7 @@ app.use(passport.session());
 
 app.use(async (req, res, next) => { // global variables
     req.hostname != "localhost" && res.on("finish", () => console.log(visitor(req, res)));
+    res.locals.user = req.user;
     res.locals.production = req.session.production = production;
     res.locals.url = req.originalUrl;
     res.locals.location_origin = MailTransporter.location_origin = `${req.protocol}://${req.headers.host}`;
