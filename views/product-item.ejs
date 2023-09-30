@@ -58,14 +58,14 @@
                                 <label for="product-style">Style</label>
                                 <select id="product-style" class="custom-select form-control theme product-style mb-4" name="style" required>
                                     <option value="">-</option>
-                                    <%_ product.units.slice().sort((a,b) => parseInt(a.unit_description) - parseInt(b.unit_description)).forEach(unit => { _%>
+                                    <%_ product.units.slice().sort((a,b) => a.length_inches - b.length_inches).forEach(unit => { _%>
                                     <option value="<%= unit.unit_description %>"><%= unit.unit_description %></option>
                                     <%_ }) _%>
                                 </select>
 
                                 <label for="product-quantity">Quantity</label>
                                 <select id="product-quantity" class="custom-select form-control theme product-quantity mb-4" name="quantity" required>
-                                    <%_ for (var i = 1; i <= 10; i++) { _%>
+                                    <%_ for (var i = 1; i <= max_quantity_option; i++) { _%>
                                     <option value="<%= i %>"><%= i %></option>
                                     <%_ } _%>
                                 </select>

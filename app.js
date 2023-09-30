@@ -58,11 +58,10 @@ app.use(async (req, res, next) => { // global variables
     res.locals.subject_options = subject_options;
     res.locals.max_quantity_option = max_quantity_option;
     res.locals.site_content = await SiteContent.findOne();
-
-    if (!req.session.checkout_session_id || /^\/shop\/checkout\/(cancel|session\/complete)$/.test(req.originalUrl)) return next();
-    checkout_cancel(req, res, next);
+    next();
 });
 
+app.use(checkout_cancel);
 app.use('/', require('./routes/index'));
 app.use('/admin', require('./routes/admin'));
 app.use('/shop', require('./routes/shop'));

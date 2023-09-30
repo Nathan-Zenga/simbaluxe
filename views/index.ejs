@@ -13,18 +13,18 @@
             <%_ } else { _%>
             <div id="product-carousel" class="carousel slide" data-interval="false">
                 <%_
-                    const products_paginated = paginate(products, 2);
-                    if (products_paginated.length > 1) {
+                    const product_pages = paginate(products, 2);
+                    if (product_pages.length > 1) {
                 _%>
                 <ol class="carousel-indicators">
-                    <%_ products_paginated.forEach((page, i) => { _%>
+                    <%_ product_pages.forEach((page, i) => { _%>
                     <li data-target="#product-carousel" data-slide-to="<%= i %>" class="<%= !i ? 'active' : '' %>"></li>
                     <%_ }) _%>
                 </ol>
                 <%_ } _%>
 
                 <div class="carousel-inner">
-                    <%_ products_paginated.forEach((page, i) => { _%>
+                    <%_ product_pages.forEach((page, i) => { _%>
                     <div class="carousel-item <%= !i ? 'active' : '' %>">
                         <div class="container">
                             <div class="row justify-content-center">
@@ -62,7 +62,7 @@
                                                                 <%= product.name %>
                                                             </span>
                                                             <span class="small font-weight-light d-block d-sm-inline">
-                                                                    View full details
+                                                                View full details
                                                             </span>
                                                             </a>
                                                         </div>
@@ -76,7 +76,7 @@
                                                             <label for="product-<%= product._id %>-style">Style</label>
                                                             <select id="product-<%= product._id %>-style" class="custom-select form-control theme mb-4 product-style" name="style" required>
                                                                 <option value="">-</option>
-                                                                <%_ product.units.slice().sort((a,b) => parseInt(a.unit_description) - parseInt(b.unit_description)).forEach(unit => { _%>
+                                                                <%_ product.units.slice().sort((a,b) => a.length_inches - b.length_inches).forEach(unit => { _%>
                                                                 <option value="<%= unit.unit_description %>"><%= unit.unit_description %></option>
                                                                 <%_ }) _%>
                                                             </select>
@@ -112,7 +112,7 @@
                     <%_ }) _%>
                 </div>
 
-                <%_ if (products_paginated.length > 1) { _%>
+                <%_ if (product_pages.length > 1) { _%>
                 <button class="carousel-control-prev" type="button" data-target="#product-carousel" data-slide="prev">
                     <span class="fal fa-angle-left" aria-hidden="true"></span>
                     <span class="sr-only">Previous</span>

@@ -172,13 +172,15 @@ $(function() {
         }
     });
 
-    $(document).on("change", "#cart .product-quantity", function() {
+    $(document).on("change", "#cart .product-quantity", function(e) {
         var $form = $(this).closest(".qty-change-form");
         $.post($form.attr("action"), $form.serializeArray(), function(res) {
             $("#cart-count").toggleClass("show", res.count > 0).text(res.count);
             $("#cart-panel").html(res.cartHtml);
         }).fail(function(err) {
-            Alert(err.responseText);
+            if (!err.responseJSON) return Alert(err.responseText);
+            Alert(err.responseJSON.message);
+            $(e.target).val(err.responseJSON.qty).change();
         })
     });
 

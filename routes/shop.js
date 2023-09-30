@@ -18,14 +18,13 @@ router.post('/cart/add', async (req, res) => {
     if (quantity > max_quantity_option) return res.status(400).send(`You can only select up to ${max_quantity_option} at a time.`);
     if (quantity > unit.unit_stock_qty) return res.status(400).send(`Only ${unit.unit_stock_qty} item(s) left in stock.\nPlease adjust the quantity.`);
 
-    const index = req.session.cart.findIndex(item => item.unit._id == unit.id);
+    const selected_item = req.session.cart.find(item => item.unit._id == unit.id);
     const max_quantity = Math.min(max_quantity_option, unit.unit_stock_qty);
 
-    if (index != -1) {
-        const item = req.session.cart[index];
-        const new_quantity = item.quantity + quantity;
-        item.unit.quantity = unit.unit_stock_qty;
-        item.quantity = Math.min(new_quantity, max_quantity);
+    if (selected_item) {
+        const new_quantity = selected_item.quantity + quantity;
+        selected_item.quantity = Math.min(new_quantity, max_quantity);
+        selected_item.unit.unit_stock_qty = unit.unit_stock_qty;
     } else {
         req.session.cart.push({
             product_id: id,
@@ -46,14 +45,19 @@ router.post('/cart/remove', (req, res) => {
     res.render("components/cart", (err, cartHtml) => res.send({ count, price_total, cartHtml }));
 });
 
-router.post('/cart/change-quantity', async (req, res) => {
-    const { id, quantity } = req.body;
+router.post('/cart/change-quantity', (req, res) => {
+    const { id, quantity: q } = req.body;
+    const quantity = parseInt(q);
+    if (isNaN(quantity) || quantity < 1) return res.status(400).send("Missing or invalid quantity selected");
+
     const item = req.session.cart.find(item => item.unit._id == id);
     if (!item) return res.status(404).send("Item not found in cart");
     if (quantity > max_quantity_option) return res.status(400).send(`You can only select up to ${max_quantity_option} at a time.`);
-    if (quantity > item.unit.unit_stock_qty) return res.status(400).send(`Only ${item.unit.unit_stock_qty} item(s) left in stock.\nPlease adjust the quantity.`);
 
-    const qty = item.quantity = Math.min(parseInt(quantity), item.unit.unit_stock_qty);
+    const message = `Only ${item.unit.unit_stock_qty} item(s) left in stock.\nPlease adjust the quantity.`;
+    if (quantity > item.unit.unit_stock_qty) return res.status(400).send({ message, qty: item.unit.unit_stock_qty });
+
+    const qty = item.quantity = Math.min(quantity, item.unit.unit_stock_qty);
 
     const count = req.session.cart.length;
     const price_total = req.session.price_total();

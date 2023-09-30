@@ -3,6 +3,7 @@ const { default: axios } = require('axios');
 const { model, Schema } = require('mongoose');
 const cloud = require('cloudinary').v2;
 const production = process.env.NODE_ENV === "production";
+const test_path = !production ? "test/" : "";
 Schema.Types.String.set('trim', true);
 Schema.Types.Number.set('default', 0);
 
@@ -42,7 +43,6 @@ const Product = module.exports = model('Product', (() => {
                 await Promise.all(promises).catch(e => { throw new Error("One or more selected image sources not found / valid") });
 
                 unit.images = await map(unit.images, (image, cb) => {
-                    const test_path = !production ? "test/" : "";
                     const public_id = `simbaluxe/${test_path}products/${unit.$parent().name}_${unit.unit_description}_${Date.now()}`.replace(/[ ?&#\\%<>+]/g, "_");
                     cloud.uploader.upload(image.url, { public_id }, (err, result) => {
                         if (err) return cb(err);
@@ -78,11 +78,11 @@ const Product = module.exports = model('Product', (() => {
     });
 
     p_schema.virtual("main_images").get(function() {
-        return this.units.map(unit => unit.main_image).filter(e => e);
+        return this.units.map(unit => unit.main_image).filter(e => e?.url);
     });
 
     p_schema.virtual("all_images").get(function() {
-        return this.units.map(unit => unit.images).flat().filter(e => e);
+        return this.units.map(unit => unit.images).flat().filter(e => e?.url);
     });
 
     p_schema.pre("save", async function() {
@@ -93,7 +93,6 @@ const Product = module.exports = model('Product', (() => {
     });
 
     p_schema.post("save", async function() {
-        const test_path = !production ? "test/" : "";
         const prefix = `simbaluxe/${test_path}products`;
         const { resources } = await cloud.api.resources({ prefix, type: "upload", max_results: 500 });
 
