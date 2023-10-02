@@ -4,7 +4,6 @@ const Stripe = new (require('stripe').Stripe)(STRIPE_SK);
 const { Order, ShippingMethod } = require('../models/models');
 const Product = require('../models/Product');
 const MailTransporter = require('../modules/mail-transporter');
-const checkout_cancel = require('../modules/checkout-cancel');
 const number_separator_regx = /\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g;
 const countries = require("../modules/country-list");
 
@@ -99,7 +98,7 @@ router.get("/session/complete", async (req, res) => {
         if (production) {
             const products = await Product.find();
             await Promise.all(cart.map(item => {
-                const product = products.find(p => p.id === item.id);
+                const product = products.find(p => p.id === item.product_id);
                 const unit = product?.units.find(u => u.unit_description === item.unit.unit_description);
                 if (!unit) return null;
                 unit.unit_stock_qty = Math.max(0, unit.unit_stock_qty - item.qty);
@@ -142,8 +141,6 @@ router.get("/session/complete", async (req, res) => {
     } catch(err) { res.status(err.statusCode || 400).render('error', { html: `<p>${err.message}</p>` }) }
 });
 
-router.get("/cancel", checkout_cancel, (req, res) => {
-    res.render('checkout-cancel', { title: "Payment Cancelled", pagename: "checkout-cancel" });
-});
+router.get("/cancel", (req, res) => res.render('checkout-cancel'));
 
 module.exports = router;

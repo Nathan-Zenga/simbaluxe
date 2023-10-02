@@ -78,11 +78,11 @@ const Product = module.exports = model('Product', (() => {
     });
 
     p_schema.virtual("main_images").get(function() {
-        return this.units.map(unit => unit.main_image).filter(e => e?.url);
+        return this.units.map(unit => unit.main_image).filter(img => img?.url);
     });
 
     p_schema.virtual("all_images").get(function() {
-        return this.units.map(unit => unit.images).flat().filter(e => e?.url);
+        return this.units.map(unit => unit.images).flat().filter(img => img?.url);
     });
 
     p_schema.pre("save", async function() {
