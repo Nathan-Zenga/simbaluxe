@@ -7,8 +7,8 @@
     "build": "npm run sass",
     "sass": "sass public/css/main.scss public/css/main.css --no-source-map",
     "sass:dev": "sass public/css/main.scss public/css/main.css",
-    "start": "node app.js",
-    "start:dev": "node -r dotenv/config app.js",
+    "start": "node app",
+    "start:dev": "node -r dotenv/config app",
     "dev": "nodemon -x \"npm run sass:dev && npm run start:dev\""
   },
   "dependencies": {
