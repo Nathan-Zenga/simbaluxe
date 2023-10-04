@@ -1,14 +1,15 @@
 <%- include ('partials/header', { pagename: "admin", title: "Admin" }) -%>
 <div class="container mb-5" id="admin-space">
-    <div class="nav nav-pills justify-content-center mb-5">
+    <div class="nav nav-pills text-center justify-content-center mb-5">
         <a class="nav-link active" data-toggle="pill" href="#products">Products</a>
+        <a class="nav-link" data-toggle="pill" href="#order-history">Orders</a>
         <a class="nav-link" data-toggle="pill" href="#site-content">Site contents</a>
         <a class="nav-link" data-toggle="pill" href="#shipping">Shipping</a>
     </div>
 
     <div class="tab-content">
         <div id="products" class="tab-pane fade show active">
-            <div class="nav nav-pills justify-content-center mb-4">
+            <div class="nav nav-pills text-center justify-content-center mb-4">
                 <a class="nav-link active" data-toggle="pill" href="#product-new">New</a>
                 <a class="nav-link" data-toggle="pill" href="#product-edit">Update</a>
                 <a class="nav-link" data-toggle="pill" href="#product-remove">Remove</a>
@@ -229,8 +230,34 @@
             </div>
         </div>
 
+        <div id="order-history" class="tab-pane fade">
+            <table id="order-history-table" class="table table-striped table-borderless table-hover table-responsive-sm">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col" class="col-Date">Date</th>
+                        <th scope="col" class="col-Customer">Customer</th>
+                        <th scope="col" class="col-Email">Email</th>
+                        <th scope="col" class="col-Receipt">Receipt</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <%_ orders.forEach((order, i) => {
+                        const order_date = order.createdAt.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }) _%>
+                    <tr>
+                        <th scope="row"><%= i+1 %></th>
+                        <td><%= order_date %></td>
+                        <td><%= order.customer.name %></td>
+                        <td><%= order.customer.email %></td>
+                        <td><a class="text-underline" href="<%= order.receipt_link %>" target="_blank">View details</a></td>
+                    </tr>
+                    <%_ }) _%>
+                </tbody>
+            </table>
+        </div>
+
         <div id="site-content" class="tab-pane fade">
-            <div class="nav nav-pills justify-content-sm-center mb-4">
+            <div class="nav nav-pills text-center justify-content-sm-center mb-4">
                 <a class="nav-link active" data-toggle="pill" href="#home-main-image">Homepage image</a>
                 <a class="nav-link" data-toggle="pill" href="#platforms">Platforms / socials</a>
                 <a class="nav-link" data-toggle="pill" href="#our-story-info">'Our Story' info</a>
@@ -376,6 +403,7 @@
     </div>
 </div>
 
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script>
     $.post("/admin/search", function(docs) {
         docs = Array.isArray(docs) ? docs : [];
@@ -455,6 +483,45 @@
 
     $("#remove_product_images").change(function() {
         $(this).closest("form").find(".file-upload-container").prop("disabled", this.checked);
+    });
+
+    $(window).on("load", function() {
+        var $ordersTable = $("#order-history-table");
+        $ordersTable.DataTable({
+            lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            language: {
+                search: "Search by date, name or email: ",
+                info: "Showing _START_ - _END_ of _TOTAL_ orders",
+                infoFiltered: "(filtered from _MAX_ total orders)",
+                zeroRecords: "No orders found",
+                lengthMenu: "Show _MENU_",
+                paginate: { previous: "Prev" }
+            },
+            autoWidth: false,
+            columnDefs: [
+                { targets: 0, visible: false },
+                { targets: "col-Receipt", orderable: false },
+                { targets: "_all", width: (100 / ($("thead th", $ordersTable).length - 1)) + "%" },
+                { targets: [0, "col-Receipt"], searchable: false }
+            ],
+            initComplete: function() {
+                var datatable = this.api().table();
+                var $wrapper = $(datatable.container());
+                var $row = $("<div class='row'>").prependTo($wrapper);
+
+                var $pageLength = $wrapper.find(".dataTables_length").appendTo($row).wrap("<div class='col-3'>");
+                $pageLength.find(":input").addClass("form-control theme mt-2 mx-0 custom-select").wrap("<form class='form'>");
+                $pageLength.add("label", $pageLength).css("width", "100%");
+
+                var $filter = $wrapper.find(".dataTables_filter").appendTo($row).wrap("<div class='col'>").addClass("mt-0");
+                var $filterInput = $filter.find(":input").addClass("form-control theme mt-2 mx-0").wrap("<form class='form'>");
+
+                $filterInput.off("keyup input change").on("keyup input", function() {
+                    var value = this.value.replace(/\W/g, function(m) { return "\\" + m });
+                    datatable.search("\\b" + value, true, false, true).draw();
+                })
+            }
+        });
     });
 </script>
 <%- include ('partials/footer') -%>

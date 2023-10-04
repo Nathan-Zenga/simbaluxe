@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const crypto = require('crypto');
-const { Admin, ShippingMethod } = require('../models/models');
+const { Admin, ShippingMethod, Order } = require('../models/models');
 const Product = require('../models/Product');
 const SiteContent = require('../models/SiteContent');
 const isAuthed = require('../modules/auth-check');
@@ -10,9 +10,10 @@ const { delivery_est_units } = require('../config/constants');
 
 router.get('/', isAuthed, async (req, res) => {
     const products = await Product.find();
+    const orders = await Order.find().sort({ _id: -1 });
     const content = await SiteContent.find();
     const shipping = await ShippingMethod.find();
-    res.render('admin', { products, content, shipping, delivery_est_units });
+    res.render('admin', { products, orders, content, shipping, delivery_est_units });
 });
 
 router.get('/login', (req, res) => {

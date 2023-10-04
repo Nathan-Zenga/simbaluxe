@@ -661,6 +661,10 @@ body.cart-open {
     }
 }
 
+select option {
+    color: black;
+}
+
 form {
     margin: 0 auto;
     max-width: 600px;
@@ -691,14 +695,8 @@ form {
         }
     }
 
-    select {
-        &.custom-select.form-control.theme {
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='#{color-accent()}' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
-        }
-
-        option {
-            color: black;
-        }
+    select.custom-select.form-control.theme {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='#{color-accent()}' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
     }
 
     .form-control.theme {
@@ -716,6 +714,10 @@ form {
         margin-right: auto;
         padding: 10px 30px;
     }
+}
+
+fieldset.file-upload-container:disabled {
+    display: none;
 }
 
 .site-toast {

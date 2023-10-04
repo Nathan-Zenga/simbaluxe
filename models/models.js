@@ -10,12 +10,12 @@ module.exports.Admin = model('Admin', new Schema({
 }));
 
 module.exports.Order = model('Order', new Schema({
-    reciept_link: { type: String, required: true },
+    receipt_link: { type: String, required: true },
     customer: {
         name: String,
         email: String
     }
-}));
+}, { timestamps: { createdAt: true } }));
 
 module.exports.Review = model('Review', new Schema({
     headline: String,
@@ -24,7 +24,7 @@ module.exports.Review = model('Review', new Schema({
     author_verified: { type: Boolean, default: false },
     rating: { type: Number, min: 0, max: 5 },
     images: [{ p_id: String, url: String }]
-}, { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } }));
+}, { timestamps: { createdAt: true, updatedAt: true } }));
 
 module.exports.ShippingMethod = model('ShippingMethod', (() => {
     const schema = new Schema({

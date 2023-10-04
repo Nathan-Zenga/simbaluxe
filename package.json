@@ -29,7 +29,7 @@
     "passport-local": "^1.0.0",
     "paypal-rest-sdk": "^1.8.1",
     "sass": "^1.64.2",
-    "stripe": "^8.222.0"
+    "stripe": "^13.8.0"
   },
   "engines": {
     "node": "*",
