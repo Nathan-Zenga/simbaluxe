@@ -34,6 +34,11 @@
                                         <a class="img-wrapper toast-toggle <%= !product.main_images.length ? 'no-image' : '' %>">
                                             <%_ const image_src = product.main_images[0]?.url || placeholder_product_image _%>
                                             <img class="img" src="<%= image_src %>" alt="Product image for '<%= product.name %>'">
+                                            <%_ if (product.stock_qty === 0) { _%>
+                                            <div class="out-of-stock-label">
+                                                <label>Out of stock</label>
+                                            </div>
+                                            <%_ } _%>
                                         </a>
 
                                         <div class="info">
@@ -68,6 +73,9 @@
                                                         </div>
                                                         <div class="col">
                                                             <div class="text-right price-calculated"></div>
+                                                        </div>
+                                                        <div class="col-12">
+                                                            <div class="text-right out-of-stock-label"></div>
                                                         </div>
                                                     </div>
 

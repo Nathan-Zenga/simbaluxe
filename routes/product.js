@@ -80,7 +80,8 @@ router.post('/get-price', async (req, res) => {
     const unit = product?.units.find(u => u.unit_description === style);
     if (!unit) return res.status(404).send("Sorry, your selected style option is not available right now.\nPlease check again later.");
 
-    res.send({ price: unit.price, stock_qty: unit.unit_stock_qty });
+    const { price, unit_stock_qty: stock_qty } = unit;
+    res.send({ price, stock_qty, out_of_stock: stock_qty == 0 });
 });
 
 module.exports = router;

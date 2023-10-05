@@ -26,6 +26,7 @@ $(function() {
     }
 
     window.Alert = function(message, closeable) {
+        if (typeof message != "string" || !message) return;
         $(".site-toast.global").slideUp(function() { $(this).remove() });
         message = "<p>" + message.replace(/\r?\n/g, "</p><p>") + "</p>";
         var $closeBtn = $("<button>").addClass("close-btn btn").attr({ type: "button", "aria-label": "Close" }).html('<span class="fal fa-times"></span>');
@@ -244,8 +245,11 @@ $(function() {
 
             html = $("#product-item-full").length ? "Unit price: <span>" + priceFormatted + "</span>" : html;
             $form.find(".price-calculated").html(res.price ? html : "");
+
+            var $label = $("<label>").addClass("btn btn-danger mb-0 mt-2").text("Out of stock");
+            $form.find(".out-of-stock-label").html(res.out_of_stock ? $label : "");
         }).fail(function(err) {
-            $form.find(".price-calculated").html("");
+            $form.find(".price-calculated, .out-of-stock-label").html("");
             err.responseText && Alert(err.responseText);
         })
     });

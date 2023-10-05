@@ -53,6 +53,9 @@
                         </div>
                         <%_ } _%>
 
+                        <%_ if (product.stock_qty === 0) { _%>
+                        <h2 class="mb-0">Out of stock</h2>
+                        <%_ } else { _%>
                         <form class="form add-to-cart-form" action="/shop/cart/add">
                             <div class="options">
                                 <label for="product-style">Style</label>
@@ -71,7 +74,14 @@
                                 </select>
                             </div>
 
-                            <div class="price-calculated price mb-3"></div>
+                            <div class="row no-gutters">
+                                <div class="col-sm">
+                                    <div class="price-calculated price mb-3"></div>
+                                </div>
+                                <div class="col-sm text-md-right">
+                                    <div class="out-of-stock-label mb-sm-0 mb-5"></div>
+                                </div>
+                            </div>
 
                             <input type="hidden" name="id" value="<%= product._id %>">
                             <button class="btn btn-theme btn-icon-circle" type="submit">
@@ -80,6 +90,7 @@
                                 </i>
                             </button>
                         </form>
+                        <%_ } _%>
                     </div>
                 </div>
             </div>

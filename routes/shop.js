@@ -13,8 +13,8 @@ router.post('/cart/add', async (req, res) => {
 
     const product = await Product.findById(id).catch(e => null);
     const unit = product?.units.find(u => u.unit_description === style);
-    if (!unit) return res.status(404).send("Product not found");
-    if (!unit.unit_stock_qty) return res.status(404).send("Product out of stock");
+    if (!unit) return res.status(404).send("Selected product not found");
+    if (!unit.unit_stock_qty) return res.status(404).send("Selected product out of stock");
     if (quantity > max_quantity_option) return res.status(400).send(`You can only select up to ${max_quantity_option} at a time.`);
     if (quantity > unit.unit_stock_qty) return res.status(400).send(`Only ${unit.unit_stock_qty} item(s) left in stock.\nPlease adjust the quantity.`);
 
