@@ -268,10 +268,10 @@
                 </thead>
                 <tbody>
                     <%_ orders.forEach((order, i) => {
-                        const order_date = order.createdAt.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }) _%>
+                        const order_date = order.purchase_date.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }) _%>
                     <tr>
                         <th scope="row"><%= i+1 %></th>
-                        <td><span class="sr-only"><%= order.createdAt.toISOString() %></span><%= order_date %></td>
+                        <td><span class="sr-only"><%= order.purchase_date.toISOString() %></span><%= order_date %></td>
                         <td><%= order.customer.name %></td>
                         <td><%= order.customer.email %></td>
                         <td><a class="text-underline" href="<%= order.receipt_link %>" target="_blank">View details</a></td>

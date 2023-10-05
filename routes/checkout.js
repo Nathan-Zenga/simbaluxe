@@ -93,8 +93,9 @@ router.get("/session/complete", async (req, res) => {
         });
 
         const { customer, payment_intent: pi, invoice } = session;
-        const { receipt_url } = pi.latest_charge;
+        const { receipt_url, created: charge_date } = pi.latest_charge;
         const hosted_invoice_url = invoice?.hosted_invoice_url || receipt_url;
+        const purchase_date = new Date(charge_date * 1000);
 
         const products = await Product.find();
         await Promise.all(cart.map(item => {
@@ -106,7 +107,7 @@ router.get("/session/complete", async (req, res) => {
         }));
 
         const { name, email } = customer;
-        await Order.create({ receipt_link: hosted_invoice_url, customer: { name, email } });
+        await Order.create({ receipt_link: hosted_invoice_url, purchase_date, customer: { name, email } });
 
         res.locals.cart = req.session.cart = [];
         req.session.checkout_session_id = undefined;
@@ -114,7 +115,7 @@ router.get("/session/complete", async (req, res) => {
         const { line1, line2, city, postal_code, state, country: c_code } = customer.shipping.address;
         const country = countries.find(c => c.code === c_code);
         const address_formatted = `${line1},${line2 ? "\n\t"+line2+"," : ""}\n\t${city}, ${country.name},` + (state ? ` ${state},` : "") + `\n\t${postal_code}`;
-        const purchase_date = new Date(pi.created * 1000).toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+        const date_formatted = purchase_date.toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long", year: "numeric" });
         const price_formatted = (pi.amount / 100).toFixed(2).replace(number_separator_regx, ",");
 
         const mail1 = { subject: "Purchase Nofication: Payment Successful" };
@@ -127,7 +128,7 @@ router.get("/session/complete", async (req, res) => {
         `- Name: ${customer.name}\n` +
         `- Email: ${customer.email}\n` +
         `- Address:\n\t${address_formatted}\n\n` +
-        `- Date of purchase: ${purchase_date}\n\n` +
+        `- Date of purchase: ${date_formatted}\n\n` +
         `- Total amount: <b>£${price_formatted} (GBP)</b>\n\n` +
         `And finally, the invoice:\n${hosted_invoice_url}`;
 

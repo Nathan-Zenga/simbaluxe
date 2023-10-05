@@ -11,11 +11,12 @@ module.exports.Admin = model('Admin', new Schema({
 
 module.exports.Order = model('Order', new Schema({
     receipt_link: { type: String, required: true },
+    purchase_date: Date,
     customer: {
         name: String,
         email: String
     }
-}, { timestamps: { createdAt: true } }));
+}));
 
 module.exports.Review = model('Review', new Schema({
     headline: String,
