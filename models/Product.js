@@ -13,7 +13,7 @@ const Product = module.exports = model('Product', (() => {
         length_inches: { type: Number, required: true },
         size: { type: String, required: true },
         price: { type: Number, required: true },
-        unit_stock_qty: { type: Number, min: [0, "No negative values allowed for stock quantity"] },
+        unit_stock_qty: { type: Number, required: true, min: [0, "No negative values allowed for stock quantity"] },
         images: [{ p_id: String, url: String }],
         main_image_index: { type: Number, min: 0 }
     });
@@ -118,13 +118,13 @@ Product._deleteMany = async query => {
 
 Product.deleteByIds = async ids => {
     ids = [ids].flat().filter(e => e);
-    if (!ids.length) throw Error("Missing product ID(s) required for deletion");
+    if (!ids.length) return null;
     return await Product._deleteMany({ _id : { $in: ids } });
 }
 
 Product.deleteUnitsByIds = async unit_ids => {
     unit_ids = [unit_ids].flat().filter(e => e);
-    if (!unit_ids.length) throw Error("Missing unit ID(s) required for deletion");
+    if (!unit_ids.length) return;
 
     const products = await Product.find({ "units._id": { $in: unit_ids } });
     const units = products.map(p => p.units).flat().filter(u => unit_ids.includes(u.id));

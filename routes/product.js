@@ -18,40 +18,46 @@ router.post('/create', isAuthed, async (req, res) => {
         await Product.create({ name, info, units });
         res.send("Product saved successfully!");
     } catch (err) {
-        res.status(400).send(err.message);
+        if (!err.errors) return res.status(400).send(err.message);
+        const errors = Object.values(err.errors);
+        const messages = errors.map(e => e.message.replace(/^path/i, "").replace(/\`/g, '"').trim());
+        res.status(400).send(messages.join("\n"));
     }
 });
 
 router.post('/update', isAuthed, async (req, res) => {
     const { product_id, unit_id, name, info, colour, length_inches, size, price, unit_stock_qty, image_file, image_url, remove_all_images } = req.body;
-    const images = [image_file, image_url].flat().filter(e => e).map(url => ({ url }));
     try {
         const product = await Product.findById(product_id);
-        const populated_fields = [colour, length_inches, size, price, unit_stock_qty].filter(e => e);
-        const new_unit = unit_id == "new";
-
+        if (!product) return res.status(404).send("Product not found");
         if (name) product.name = name;
         if (info) product.info = info;
 
-        if (new_unit && populated_fields.length) {
-            product.units.shift({ colour, length_inches, size, price, unit_stock_qty, images });
+        const images = [image_file, image_url].flat().filter(e => e).map(url => ({ url }));
+        const new_unit = unit_id == "new";
+
+        if (new_unit) {
+            product.units.unshift({ colour, length_inches, size, price, unit_stock_qty, images });
         }
         else if (unit_id) {
             const unit = product.units.find(u => unit_id == u.id);
-            if (unit) {
-                if (colour) unit.colour = colour;
-                if (length_inches) unit.length_inches = length_inches;
-                if (size) unit.size = size;
-                if (price) unit.price = price;
-                if (unit_stock_qty) unit.unit_stock_qty = unit_stock_qty;
-                if (images.length || remove_all_images == "true") unit.images = images;
-            }
+            if (!unit) return res.status(404).send("Product unit not found");
+
+            if (colour) unit.colour = colour;
+            if (length_inches) unit.length_inches = length_inches;
+            if (size) unit.size = size;
+            if (price) unit.price = price;
+            if (unit_stock_qty) unit.unit_stock_qty = unit_stock_qty;
+            if (images.length || remove_all_images == "true") unit.images = images;
         }
 
         await product.save();
         res.send(`Product saved successfully${new_unit ? ", with the new unit" : ""}!`);
     } catch (err) {
-        res.status(400).send(err.message);
+        if (!err.errors) return res.status(400).send(err.message);
+        const errors = Object.values(err.errors);
+        const messages = errors.map(e => e.message.replace(/^path/i, "").replace(/\`/g, '"').trim());
+        res.status(400).send(messages.join("\n"));
     }
 });
 

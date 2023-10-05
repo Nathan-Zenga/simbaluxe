@@ -26,6 +26,7 @@ $(function() {
     }
 
     window.Alert = function(message, closeable) {
+        $(".site-toast.global").slideUp(function() { $(this).remove() });
         message = "<p>" + message.replace(/\r?\n/g, "</p><p>") + "</p>";
         var $closeBtn = $("<button>").addClass("close-btn btn").attr({ type: "button", "aria-label": "Close" }).html('<span class="fal fa-times"></span>');
         var $toast = $("<div>").addClass("site-toast global text-center").html(message).prepend(closeable ? $closeBtn : "");
