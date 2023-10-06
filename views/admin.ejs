@@ -212,7 +212,7 @@
                         <fieldset class="items">
                         <%_ products.forEach((p, i) => { _%>
                             <div class="form-check mb-3 product-checkbox search-item">
-                                <%_ const input_id = `product-unit-${i+1}` _%>
+                                <%_ const input_id = `product-${i+1}` _%>
                                 <input type="checkbox" class="form-check-input" id="<%= input_id %>" name="product_id" value="<%= p.id %>">
                                 <label class="form-check-label ml-2 search-option" for="<%= input_id %>"><%= p.name %></label>
                             </div>
@@ -483,8 +483,10 @@
         var isRemoveForm = $(this).is(".remove-form");
         var progressMsg = isRemoveForm ? "Removing" : "Saving";
         var btnControl = new submitBtnController(this, { progressMsg, ellipsis: true });
+        var $checkedBoxes = $(this).find(":input:checked");
         $.post(this.action, $(this).serializeArray(), function(message) {
             Alert(message);
+            $checkedBoxes.closest(".remove-form .form-check").slideUp(function() { $(this).remove() });
         }).fail(function(err) {
             Alert(err.responseText, true);
         }).always(function() {

@@ -1,6 +1,6 @@
-const { map, each } = require('async');
+const { map } = require('async');
 const { default: axios } = require('axios');
-const { model, Schema } = require('mongoose');
+const { model, Schema, Document: Doc } = require('mongoose');
 const cloud = require('cloudinary').v2;
 const production = process.env.NODE_ENV === "production";
 const test_path = !production ? "test/" : "";
@@ -84,14 +84,16 @@ const Product = module.exports = model('Product', (() => {
         return this.units.map(unit => unit.images).flat().filter(img => img?.url);
     });
 
-    p_schema.pre("save", async function() {
-        const doc = this;
+    p_schema.pre(/save|update/i, async function() {
+        const docs = this instanceof Doc ? [this] : await Product.find(this.getFilter());
         const products = await Product.find();
-        const found = products.find(p => p.id != doc.id && p.link === doc.link);
-        if (found) throw Error("Cannot save product with the same name as another");
+        for (const doc of docs) {
+            const found = products.find(p => p.id != doc.id && p.link === doc.link);
+            if (found) throw Error("Cannot save product with the same name as another");
+        }
     });
 
-    p_schema.post("save", async function() {
+    p_schema.post(/save|update|delete|remove/i, async function() {
         const prefix = `simbaluxe/${test_path}products`;
         const { resources } = await cloud.api.resources({ prefix, type: "upload", max_results: 500 });
 
@@ -104,37 +106,3 @@ const Product = module.exports = model('Product', (() => {
 
     return p_schema;
 })());
-
-Product._deleteMany = async query => {
-    const products = await Product.find(query);
-    const images = products.map(p => p.units).flat().map(u => u.images).flat();
-    const p_ids = images.map(img => img.p_id);
-    const prefixes = [...new Set(p_ids.map(p_id => p_id.replace(/\-\d+$/, "")))];
-
-    await Promise.allSettled(prefixes.map(p => cloud.api.delete_resources_by_prefix(p)));
-    return await Product.deleteMany(query);
-}
-
-Product.deleteByIds = async ids => {
-    ids = [ids].flat().filter(e => e);
-    if (!ids.length) return null;
-    return await Product._deleteMany({ _id : { $in: ids } });
-}
-
-Product.deleteUnitsByIds = async unit_ids => {
-    unit_ids = [unit_ids].flat().filter(e => e);
-    if (!unit_ids.length) return;
-
-    const products = await Product.find({ "units._id": { $in: unit_ids } });
-    const units = products.map(p => p.units).flat().filter(u => unit_ids.includes(u.id));
-    const p_ids = units.map(u => u.images).flat().map(img => img.p_id);
-    const prefixes = [...new Set(p_ids.map(p_id => p_id.replace(/\-\d+$/, "")))];
-
-    await Promise.allSettled(prefixes.map(p => cloud.api.delete_resources_by_prefix(p)));
-
-    await each(products, (p, cb) => {
-        p.units = p.units.filter(u => !unit_ids.includes(u.id));
-        const action = !p.units.length ? "delete" : "save";
-        p[action](e => e ? cb(e) : cb());
-    });
-}

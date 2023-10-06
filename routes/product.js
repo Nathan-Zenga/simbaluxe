@@ -63,9 +63,18 @@ router.post('/update', isAuthed, async (req, res) => {
 
 router.post('/delete', isAuthed, async (req, res) => {
     if (!req.body.product_id && !req.body.unit_id) return res.status(400).send("Nothing selected");
+    const ids = [req.body.product_id].flat().filter(e => e);
+    const unit_ids = [req.body.unit_id].flat().filter(e => e);
+
     try {
-        await Product.deleteByIds(req.body.product_id);
-        await Product.deleteUnitsByIds(req.body.unit_id);
+        if (ids.length) await Product.deleteMany({ _id : { $in: ids } });
+
+        const products = unit_ids.length ? await Product.find({ "units._id": { $in: unit_ids } }) : [];
+        await Promise.all(products.map(product => {
+            product.units = product.units.filter(u => !unit_ids.includes(u.id));
+            return !product.units.length ? product.delete() : product.save();
+        }));
+
         res.send("Selected products now removed from stock");
     } catch (err) {
         res.status(400).send(err.message);
