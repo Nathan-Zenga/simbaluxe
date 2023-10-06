@@ -1,6 +1,6 @@
 <%- include ('partials/header', { pagename: "admin", title: "Admin" }) -%>
-<div class="container mb-5" id="admin-space">
-    <div class="nav nav-pills text-center justify-content-center mb-5">
+<div class="container mb-5" id="admin-scope">
+    <div class="nav nav-pills text-center justify-content-sm-center mb-5">
         <a class="nav-link active" data-toggle="pill" href="#products">Products</a>
         <a class="nav-link" data-toggle="pill" href="#order-history">Orders</a>
         <a class="nav-link" data-toggle="pill" href="#site-content">Site contents</a>
@@ -234,13 +234,13 @@
                 </div>
 
                 <div id="product-list" class="tab-pane fade">
-                    <table id="product-list-table" class="table table-striped table-borderless table-hover table-responsive-sm">
+                    <table id="product-list-table" class="dataTable table table-striped table-borderless table-hover table-responsive-sm">
                         <thead>
                             <tr>
                                 <th scope="col">Product</th>
                                 <th scope="col">Unit Style</th>
-                                <th scope="col" class="unsearchable no-sort num-format">Stock Quantity</th>
-                                <th scope="col" class="unsearchable num-format">Price</th>
+                                <th scope="col" class="unsearchable num">Stock Quantity</th>
+                                <th scope="col" class="unsearchable num">Price</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -250,7 +250,7 @@
                                 <th scope="row"><%= product.name %></th>
                                 <td><%= `${unit.colour} (${unit.size}) - ${unit.length_inches}in`.toLowerCase().replace(/\b./g, m => m.toUpperCase()) %></td>
                                 <td><%= unit.unit_stock_qty %></td>
-                                <td>£<%= unit.price.toFixed(2) %></td>
+                                <td data-sort="<%= unit.price %>">£<%= unit.price.toFixed(2) %></td>
                             </tr>
                             <%_ }) _%>
                         </tbody>
@@ -260,11 +260,10 @@
         </div>
 
         <div id="order-history" class="tab-pane fade">
-            <table id="order-history-table" class="table table-striped table-borderless table-hover table-responsive-sm">
+            <table id="order-history-table" class="dataTable table table-striped table-borderless table-hover table-responsive-sm">
                 <thead>
                     <tr>
-                        <th scope="col" class="unsearchable col-index">#</th>
-                        <th scope="col" class="date-format">Date</th>
+                        <th scope="col" class="num">Date</th>
                         <th scope="col">Customer</th>
                         <th scope="col">Email</th>
                         <th scope="col" class="unsearchable no-sort">Receipt</th>
@@ -272,10 +271,9 @@
                 </thead>
                 <tbody>
                     <%_ orders.forEach((order, i) => {
-                        const order_date = order.purchase_date.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }) _%>
+                        const order_date_formatted = order.purchase_date.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }) _%>
                     <tr>
-                        <th scope="row"><%= i+1 %></th>
-                        <td><span class="sr-only"><%= order.purchase_date.toISOString() %></span><%= order_date %></td>
+                        <th scope="row" data-sort="<%= order.purchase_date.getTime() %>"><%= order_date_formatted %></th>
                         <td><%= order.customer.name %></td>
                         <td><%= order.customer.email %></td>
                         <td><a class="text-underline" href="<%= order.receipt_link %>" target="_blank">View details</a></td>
@@ -478,7 +476,7 @@
         });
     });
 
-    $("#admin-space form").submit(function(e) {
+    $("#admin-scope form").submit(function(e) {
         e.preventDefault();
         var isRemoveForm = $(this).is(".remove-form");
         var progressMsg = isRemoveForm ? "Removing" : "Saving";
@@ -516,33 +514,32 @@
         $(this).closest("form").find(".file-upload-container").prop("disabled", this.checked);
     });
 
-    $(window).on("load", function() {
-        var dataTableOptions = {
+    $(".dataTable").each(function() {
+        var options = {
             lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
             language: {
-                lengthMenu: "Show _MENU_",
+                lengthMenu: "Show: _MENU_",
                 paginate: { previous: "Prev" }
             },
             autoWidth: false,
             columnDefs: [
-                { targets: "col-index", visible: false },
                 { targets: "no-sort", orderable: false },
                 { targets: "unsearchable", searchable: false },
-                { targets: "num-format", type: "num-fmt" },
-                { targets: "date-format", type: "date" }
+                { targets: "num", type: "num" },
             ],
             initComplete: function() {
                 var datatable = this.api().table();
                 var $wrapper = $(datatable.container());
                 var $row = $("<div class='row'>").prependTo($wrapper);
 
-                var $pageLength = $wrapper.find(".dataTables_length").appendTo($row).wrap("<div class='col-3'>");
+                var $pageLength = $wrapper.find(".dataTables_length").appendTo($row).wrap("<div class='col-md-2 col-sm-3 col-4'>").addClass("text-left");
                 $pageLength.find(":input").addClass("form-control theme mt-2 mx-0 custom-select").wrap("<form class='form'>");
                 $pageLength.add("label", $pageLength).css("width", "100%");
 
-                var $filter = $wrapper.find(".dataTables_filter").appendTo($row).wrap("<div class='col'>").addClass("mt-0");
-                var $filterInput = $filter.find(":input").addClass("form-control theme mt-2 mx-0").wrap("<form class='form'>");
+                var $filter = $wrapper.find(".dataTables_filter").appendTo($row).wrap("<div class='col'>").addClass("mt-0 text-right");
+                $filter.find("label").addClass("text-left");
 
+                var $filterInput = $filter.find(":input").addClass("form-control theme mt-2 mx-0").wrap("<form class='form'>");
                 $filterInput.off("keyup input change").on("keyup input", function() {
                     var value = this.value.replace(/\W/g, function(m) { return "\\" + m });
                     datatable.search("\\b" + value, true, false, true).draw();
@@ -550,18 +547,23 @@
             }
         };
 
-        var dtOptions = Object.assign(dataTableOptions, {});
-        dtOptions.language.info = "Showing _START_ - _END_ of _TOTAL_ orders";
-        dtOptions.language.infoFiltered = "(filtered from _MAX_ total orders)";
-        dtOptions.language.zeroRecords = "No orders found";
-        $("#order-history-table").DataTable(dtOptions);
+        switch (this.id) {
+            case "order-history-table":
+                options.language.info = "Showing _START_ - _END_ of _TOTAL_ orders";
+                options.language.infoFiltered = "(filtered from _MAX_ total orders)";
+                options.language.zeroRecords = "No orders found";
+                options.order = [[ 0, "desc" ]];
+            break;
 
-        dtOptions = Object.assign(dataTableOptions, {});
-        dtOptions.language.info = "Showing _START_ - _END_ of _TOTAL_ products";
-        dtOptions.language.infoFiltered = "(filtered from _MAX_ total products)";
-        dtOptions.language.zeroRecords = "No products found";
-        dtOptions.order = [[ 0, "asc" ], [ 1, "asc" ]];
-        $("#product-list-table").DataTable(dtOptions);
+            case "product-list-table":
+                options.language.info = "Showing _START_ - _END_ of _TOTAL_ products";
+                options.language.infoFiltered = "(filtered from _MAX_ total products)";
+                options.language.zeroRecords = "No products found";
+                options.order = [[ 0, "asc" ], [ 1, "asc" ]];
+            break;
+        }
+
+        $(this).DataTable(options);
     });
 </script>
 <%- include ('partials/footer') -%>

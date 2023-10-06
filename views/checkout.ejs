@@ -57,7 +57,7 @@
     <script>
         $("#payment-form").submit(function(e) {
             e.preventDefault();
-            var btnControl = new submitBtnController(this, { progressMsg: "REDIRECTING", ellipsis: true });
+            var btnControl = new submitBtnController(this, { progressMsg: "Redirecting", ellipsis: true });
             $.post(this.action, $(this).serializeArray(), function(data) {
                 var stripe = Stripe(data.pk);
                 return stripe.redirectToCheckout({ sessionId: data.id });

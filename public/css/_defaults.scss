@@ -2,10 +2,10 @@
 @import url('https://cdn.jsdelivr.net/gh/hung1001/font-awesome-pro@4cac1a6/css/all.css');
 @import url('https://fonts.googleapis.com/css2?family=Spartan:wght@200;300;500;600;700&family=Bodoni+Moda&family=Taprom&display=swap');
 
-@function color-primary   ($alpha: 100) { @return rgba(20, 20, 20, $alpha); }
-@function color-secondary ($alpha: 100) { @return rgba(30, 30, 30, $alpha); }
-@function color-tertiary  ($alpha: 100) { @return rgba(255, 211, 177, $alpha); }
-@function color-accent    ($alpha: 100) { @return rgba(190, 190, 190, $alpha); }
+@function color-primary   ($alpha: 1) { @return rgba(20, 20, 20, $alpha); }
+@function color-secondary ($alpha: 1) { @return rgba(30, 30, 30, $alpha); }
+@function color-tertiary  ($alpha: 1) { @return rgba(255, 211, 177, $alpha); }
+@function color-accent    ($alpha: 1) { @return rgba(190, 190, 190, $alpha); }
 
 $sm: 576px;
 $md: 768px;
@@ -150,10 +150,7 @@ a:hover {
 
     &.table-hover tbody tr:hover {
         color: color-tertiary();
-    }
-
-    &.table-hover:not(.table-striped) tbody tr:hover {
-        background-color: color-secondary();
+        background-color: color-tertiary(.15) !important;
     }
 
     &.table-striped tbody tr:nth-of-type(odd) {
@@ -186,7 +183,7 @@ a:hover {
         padding: 30px 0 10px;
         margin-bottom: 30px;
 
-        tbody td {
+        tbody th, tbody td {
             padding-top: 1em;
             padding-bottom: 1em;
         }

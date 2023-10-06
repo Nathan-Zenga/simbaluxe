@@ -6,6 +6,7 @@ const Product = require('../models/Product');
 const MailTransporter = require('../modules/mail-transporter');
 const number_separator_regx = /\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g;
 const countries = require("../modules/country-list");
+const { each } = require('async');
 const timeout = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 router.get('/', async (req, res) => {
@@ -84,7 +85,7 @@ router.post("/session/create", async (req, res) => {
 router.get("/session/complete", async (req, res) => {
     const { checkout_session_id, cart } = req.session;
     if (!cart.length) return res.status(400).render('error', { html: "Unable to complete checkout - session expired" });
-    await timeout(2000); // hotfix: gives extra time for session.invoice to exist / finalise
+    await timeout(2000); // hotfix: gives extra time for checkout.session.invoice to exist / finalise
 
     try {
         const session = await Stripe.checkout.sessions.retrieve(checkout_session_id, { expand: ["customer", "payment_intent.latest_charge", "invoice"] });
@@ -98,13 +99,16 @@ router.get("/session/complete", async (req, res) => {
         const purchase_date = new Date(charge_date * 1000);
 
         const products = await Product.find();
-        await Promise.all(cart.map(item => {
+        for (const item of cart) {
             const product = products.find(p => p.id === item.product_id);
             const unit = product?.units.find(u => u.unit_description === item.unit.unit_description);
-            if (!unit) return null;
-            unit.unit_stock_qty = Math.max(0, unit.unit_stock_qty - item.quantity);
-            return product.save();
-        }));
+            if (unit) unit.unit_stock_qty = Math.max(0, unit.unit_stock_qty - item.quantity);
+        }
+
+        await each(products, (product, cb) => {
+            if (!product.isModified()) return cb();
+            product.save(e => e ? cb(e) : cb());
+        });
 
         const { name, email } = customer;
         await Order.create({ receipt_link: hosted_invoice_url, purchase_date, customer: { name, email } });

@@ -10,7 +10,7 @@ const { delivery_est_units } = require('../config/constants');
 
 router.get('/', isAuthed, async (req, res) => {
     const products = await Product.find();
-    const orders = await Order.find().sort({ _id: -1 });
+    const orders = await Order.find();
     const content = await SiteContent.find();
     const shipping = await ShippingMethod.find();
     res.render('admin', { products, orders, content, shipping, delivery_est_units });
