@@ -33,27 +33,26 @@ const Product = module.exports = model('Product', (() => {
         const images_updated = unit.modifiedPaths({ includeChildren: true }).includes("images");
         const existing = unit.$parent().units.find(u => u.id != unit.id && u.unit_description === unit.unit_description);
         if (existing) return next(Error("Cannot save product in the same style as another (duplicate)"));
+        if (!images_updated) return next();
 
         try {
             const isDataURL = s => !!s.match(isDataURL.regex);
             isDataURL.regex = /^\s*data:([a-z]+\/[a-z]+(;[a-z\-]+\=[a-z\-]+)?)?(;base64)?,[a-z0-9\!\$\&\'\,\(\)\*\+\,\;\=\-\.\_\~\:\@\/\?\%\s]*\s*$/i;
 
-            if (images_updated) {
-                const promises = unit.images.filter(img => !isDataURL(img.url)).map(img => axios.get(img.url));
-                await Promise.all(promises).catch(e => { throw new Error("One or more selected image sources not found / valid") });
+            const promises = unit.images.filter(img => !isDataURL(img.url)).map(img => axios.get(img.url));
+            await Promise.all(promises).catch(e => { throw Error("One or more selected image sources not found / valid") });
 
-                unit.images = await map(unit.images, (image, cb) => {
-                    const public_id = `simbaluxe/${test_path}products/${unit.$parent().name}_${unit.unit_description}_${Date.now()}`.replace(/[ ?&#\\%<>+]/g, "_");
-                    cloud.uploader.upload(image.url, { public_id }, (err, result) => {
-                        if (err) return cb(err);
-                        p_ids.push(result.public_id);
-                        cb(null, { p_id: result.public_id, url: result.secure_url });
-                    });
+            unit.images = await map(unit.images, (image, cb) => {
+                const public_id = `simbaluxe/${test_path}products/${unit.$parent().name}_${unit.unit_description}_${Date.now()}`.replace(/[ ?&#\\%<>+]/g, "_");
+                cloud.uploader.upload(image.url, { public_id }, (err, result) => {
+                    if (err) return cb(err);
+                    p_ids.push(result.public_id);
+                    cb(null, { p_id: result.public_id, url: result.secure_url });
                 });
+            });
 
-                unit.main_image_index = Math.min(unit.main_image_index, unit.images.length-1);
-                unit.main_image_index = Math.max(unit.main_image_index, 0);
-            }
+            unit.main_image_index = Math.min(unit.main_image_index, unit.images.length-1);
+            unit.main_image_index = Math.max(unit.main_image_index, 0);
             next();
         } catch (err) {
             await cloud.api.delete_resources(p_ids).catch(e => e);
@@ -135,6 +134,7 @@ Product.deleteUnitsByIds = async unit_ids => {
 
     await each(products, (p, cb) => {
         p.units = p.units.filter(u => !unit_ids.includes(u.id));
-        p.save(e => e ? cb(e) : cb());
+        const action = !p.units.length ? "delete" : "save";
+        p[action](e => e ? cb(e) : cb());
     });
 }

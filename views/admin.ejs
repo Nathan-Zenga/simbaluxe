@@ -191,6 +191,9 @@
                 </div>
 
                 <div id="product-remove" class="tab-pane fade search-scope">
+                <%_ if (!products.length) { _%>
+                    <p class="my-5 text-center" style="font-weight: 400">No products found</p>
+                <%_ } else { _%>
                     <form class="filter-search-form mb-4">
                         <div class="input-group">
                             <div class="input-group-prepend">
@@ -227,6 +230,7 @@
 
                         <button class="btn btn-theme" type="submit">Remove</button>
                     </form>
+                <%_ } _%>
                 </div>
 
                 <div id="product-list" class="tab-pane fade">
