@@ -246,10 +246,10 @@ $(function() {
             html = $("#product-item-full").length ? "Unit price: <span>" + priceFormatted + "</span>" : html;
             $form.find(".price-calculated").html(res.price ? html : "");
 
-            var $label = $("<label>").addClass("btn btn-danger mb-0 mt-2").text("Out of stock");
-            $form.find(".out-of-stock-label").html(res.out_of_stock ? $label : "");
+            var $label = $("<label>").addClass("btn btn-danger mb-0 mt-2").text(res.stock_status);
+            $form.find(".stock-status").html(res.stock_status ? $label : "");
         }).fail(function(err) {
-            $form.find(".price-calculated, .out-of-stock-label").html("");
+            $form.find(".price-calculated, .stock-status").html("");
             err.responseText && Alert(err.responseText);
         })
     });

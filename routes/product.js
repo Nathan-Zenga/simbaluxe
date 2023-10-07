@@ -90,7 +90,10 @@ router.post('/get-price', async (req, res) => {
     if (!unit) return res.status(404).send("Sorry, your selected style option is not available right now.\nPlease check again later.");
 
     const { price, unit_stock_qty: stock_qty } = unit;
-    res.send({ price, stock_qty, out_of_stock: stock_qty == 0 });
+    var stock_status = "";
+    if (stock_qty < 5) stock_status = `Only ${stock_qty} left`;
+    if (stock_qty == 0) stock_status = "Out of stock";
+    res.send({ price, stock_qty, stock_status });
 });
 
 module.exports = router;
