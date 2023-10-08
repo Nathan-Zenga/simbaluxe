@@ -19,26 +19,6 @@ router.get('/product/create', async (req, res) => {
     }
 });
 
-router.get('/product/delete/:id?', async (req, res) => {
-    try {
-        const result = await Product._deleteMany(req.params.id ? { _id: req.params.id } : {});
-        res.send(result);
-    } catch(e) {
-        console.error(e);
-        res.status(500).send(e.message);
-    }
-});
-
-router.get('/product/unit/delete/:id', async (req, res) => {
-    try {
-        await Product.deleteUnitsByIds(req.params.id);
-        res.send("Product units deleted successfully");
-    } catch(e) {
-        console.error(e);
-        res.status(500).send(e.message);
-    }
-});
-
 router.get('/product/list/:id?', async (req, res) => {
     try {
         const result = await Product.find(req.params.id ? { _id: req.params.id } : {});

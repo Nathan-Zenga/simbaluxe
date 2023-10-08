@@ -76,10 +76,10 @@
                     }).replace(url_regex, (match, pos, str) => {
                         const href = /^www/.test(match) || !/^(https?|ftp|file|data)/.test(match) ? "http://" + match : match;
                         const href_present = str.slice(pos-6, pos) === 'href="';
-                        return href_present ? `<a style="color: inherit!important" target="_blank" href="${href}">${match}</a>` : match;
+                        return href_present ? `<b><a style="color: inherit!important" target="_blank" href="${href}">${match}</a></b>` : match;
                     }).replace(email_regex, match => {
                         const href = "mailto:" + match;
-                        return `<a style="color: inherit!important" target="_blank" href="${href}">${match}</a>`
+                        return `<b><a style="color: inherit!important" target="_blank" href="${href}">${match}</a></b>`
                     }).replace(/\r?\n/g, "<br>").replace(/\t/g, "&emsp;");
                 })()
             %>

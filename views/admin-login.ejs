@@ -1,22 +1,40 @@
-<%- include ('partials/header', { pagename: "admin", title: "Admin | Log in" }) -%>
+<%- include ('partials/header', { pagename: "admin", title: "Log in - Admin" }) -%>
     <div class="container">
         <form id="admin-login-form" class="form" action="/admin/login">
+            <%_ if (admin) { _%>
             <label for="password">Password *</label>
             <input id="password" class="form-control theme mb-4" type="password" name="password">
+            <small class="text-muted">Forgot password? <a id="reset-password" class="text-underline">Click here</a> to reset</small>
 
             <button type="submit" class="btn btn-theme mt-4">Log in</button>
+            <%_ } else { _%>
+            <input type="hidden" name="password" value="password">
+            <button type="submit" class="btn btn-theme">Activate account</button>
+            <%_ } _%>
         </form>
     </div>
 
     <script>
         $("#admin-login-form").submit(function(e) {
             e.preventDefault();
-            var btnControl = new submitBtnController(this, { progressMsg: "Logging in", ellipsis: true });
+            var progressMsg = "<%= admin ? 'Logging in' : '' %>";
+            var btnControl = new submitBtnController(this, { progressMsg, ellipsis: true });
             $.post(this.action, $(this).serializeArray(), function(res) {
                 location.href = res.redirect_to
-            }).fail(function(err, status) {
+            }).fail(function(err) {
                 btnControl.finish();
                 Alert(err.responseText);
+            });
+        }).find("#reset-password").click(function(e) {
+            e.preventDefault();
+            var $form = $(this).closest("form");
+            var btnControl = new submitBtnController($form, { progressMsg: "Sending password reset email", ellipsis: true });
+            $.post("/admin/password/reset/send-email", null, function(message) {
+                Alert(message);
+            }).fail(function(err) {
+                Alert(err.responseText);
+            }).always(function() {
+                btnControl.finish();
             });
         });
     </script>

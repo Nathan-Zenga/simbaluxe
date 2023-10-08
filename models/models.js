@@ -6,6 +6,7 @@ Schema.Types.Number.set('default', 0);
 module.exports.Admin = model('Admin', new Schema({
     email: { type: String, index: true, required: true },
     password: { type: String, required: true },
+    token: String,
     token_expiry_date: Date
 }));
 
