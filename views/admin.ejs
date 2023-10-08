@@ -478,8 +478,7 @@
 
     $("#admin-scope form").submit(function(e) {
         e.preventDefault();
-        var isRemoveForm = $(this).is(".remove-form");
-        var progressMsg = isRemoveForm ? "Removing" : "Saving";
+        var progressMsg = $(this).is(".remove-form") ? "Removing" : "Saving";
         var btnControl = new submitBtnController(this, { progressMsg, ellipsis: true });
         var $checkedBoxes = $(this).find(":input:checked");
         $.post(this.action, $(this).serializeArray(), function(message) {
@@ -525,7 +524,7 @@
             columnDefs: [
                 { targets: "no-sort", orderable: false },
                 { targets: "unsearchable", searchable: false },
-                { targets: "num", type: "num" },
+                { targets: "num", type: "num" }
             ],
             initComplete: function() {
                 var datatable = this.api().table();

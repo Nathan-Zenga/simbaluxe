@@ -24,13 +24,13 @@ router.get('/login', (req, res) => {
 router.get('/logout', (req, res) => req.logout(() => res.redirect('/')));
 
 router.get('/activate/:token', async (req, res, next) => {
-    const found = await Admin.findOne({ password: req.params.token, tokenExpiryDate: { $gte: Date.now() } });
+    const found = await Admin.findOne({ password: req.params.token, token_expiry_date: { $gte: Date.now() } });
     if (!found) return next();
     res.render('admin-activate', { token: found.password })
 });
 
 router.post('/login', (req, res) => {
-    req.body.username = process.env.DOMAIN_EMAIL;
+    const email = req.body.username = process.env.DOMAIN_EMAIL;
     Object.freeze(req.body);
     passport.authenticate("local-login-admin", async (err, user, info) => {
         if (err) return res.status(500).send(err.message || err);
@@ -38,8 +38,8 @@ router.post('/login', (req, res) => {
         if (user === "to_activate") {
             await Admin.deleteMany({ email: "temp" });
             const password = crypto.randomBytes(20).toString("hex");
-            const tokenExpiryDate = new Date(Date.now() + (1000 * 60 * 60 * 2));
-            const doc = await Admin.create({ email: "temp", password, tokenExpiryDate });
+            const token_expiry_date = new Date(Date.now() + (1000 * 60 * 60 * 2));
+            const doc = await Admin.create({ email: "temp", password, token_expiry_date });
             const subject = "Admin Account Activation";
             const message = "You're recieving this email because an admin account needs setting up. " +
                 "Please click the link below to activate the account, as this will only be " +

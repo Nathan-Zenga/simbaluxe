@@ -1,10 +1,11 @@
 $(function() {
     window.submitBtnController = function(form, opts) {
+        opts = opts || {};
         var clicked = $(form).find("#clicked:submit").length ? "#clicked" : "";
         var $submitBtn = this.submitBtn = $(form).find(clicked+":submit").attr("disabled", true);
         var method = this.method = this.submitBtn.is(":button") ? "html" : "val";
         this.originalVal = this.submitBtn[method]();
-        var progressVal = this.submitBtn[method](opts.progressMsg || "SUBMITTING")[method]();
+        var progressVal = this.submitBtn[method](opts.progressMsg || "Submitting")[method]();
         this.interval = !opts.ellipsis ? -1 : setInterval(function() {
             var val = $submitBtn[method]();
             var ellipsis = $submitBtn[method]().includes("...");

@@ -1,20 +1,24 @@
 <%- include ('partials/header', { pagename: "admin", title: "Admin | Register" }) -%>
     <div class="container">
-        <form id="admin-activate-form" method="post" action="/admin/activate/<%- token %>">
-            <label>New Password *</label>
-            <input type="password" name="password" id="password" required>
+        <form id="admin-activate-form" class="form" action="/admin/activate/<%- token %>">
+            <fieldset>
+                <legend class="text-center mb-4">Activate your admin account</legend>
 
-            <label>Confirm Password *</label>
-            <input type="password" name="password_confirm" id="password_confirm" required>
+                <label>New Password *</label>
+                <input type="password" class="form-control theme mb-4" name="password" id="password" required>
 
-            <input type="submit" value="SUBMIT">
+                <label>Confirm Password *</label>
+                <input type="password" class="form-control theme mb-4" name="password_confirm" id="password_confirm" required>
+            </fieldset>
+
+            <button type="submit" class="btn btn-theme mt-4">Submit</button>
         </form>
     </div>
 
     <script>
         $("#admin-activate-form").submit(function(e) {
             e.preventDefault();
-            var btnController = new submitBtnController(this);
+            var btnController = new submitBtnController(this, { ellipsis: true });
             $.post(this.action, $(this).serializeArray(), function(result) {
                 e.target.reset();
                 location.href = result.href;

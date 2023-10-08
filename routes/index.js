@@ -16,8 +16,8 @@ router.get('/about', async (req, res) => res.redirect("/#about"));
 router.get('/contact', async (req, res) => res.redirect("/#contact"));
 
 router.post('/contact/mail/send', /*recaptcha,*/ async (req, res) => {
-    const { firstname, lastname, email, subject, message: msg } = req.body;
-    const message = `Message from <b>${firstname} ${lastname} (${email})</b>:\n\n${msg}`;
+    const { name, email, subject, message: msg } = req.body;
+    const message = `Message from <b>${name} (${email})</b>:\n\n${msg}`;
     new MailTransporter({ email: DOMAIN_EMAIL }).sendMail({ subject, message }, err => {
         if (err) return res.status(500).send(err.message);
         res.send("Email sent");
