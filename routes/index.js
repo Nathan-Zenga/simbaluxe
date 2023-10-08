@@ -38,4 +38,6 @@ router.post('/shipping/fee/update', isAuthed, async (req, res) => {
     } catch (err) { res.status(400).send(err.message) }
 });
 
+router.get('/logout', (req, res) => req.logout(() => res.redirect('/')));
+
 module.exports = router;

@@ -21,8 +21,6 @@ router.get('/login', (req, res) => {
     res.render('admin-login')
 });
 
-router.get('/logout', (req, res) => req.logout(() => res.redirect('/')));
-
 router.get('/activate/:token', async (req, res, next) => {
     const found = await Admin.findOne({ password: req.params.token, token_expiry_date: { $gte: Date.now() } });
     if (!found) return next();
