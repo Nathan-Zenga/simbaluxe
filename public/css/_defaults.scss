@@ -130,6 +130,44 @@ a:hover {
 
     &-control-prev, &-control-next {
         font-size: 4rem;
+
+        @media (max-width: calc($md - 1px)) {
+            top: auto;
+            height: 30px;
+        }
+    }
+
+    &-controls {
+        position: absolute;
+        z-index: 100;
+        left: 50%;
+        bottom: 50%;
+        @include vendorProp(transform, translate(-50%, -50%));
+
+        @media (max-width: calc($lg - 1px)) {
+            bottom: 0;
+        }
+
+        > .carousel-control-prev, > .carousel-control-next {
+            top: auto;
+            bottom: auto;
+            height: auto;
+            @include vendorProp(transform, translateY(-75%));
+
+            @media (min-width: $md) {
+                padding: 50px 0;
+            }
+        }
+
+        @media (min-width: $md) {
+            > .carousel-control-prev {
+                @include vendorProp(transform, translate(-50%, -50%));
+            }
+
+            > .carousel-control-next {
+                @include vendorProp(transform, translate(50%, -50%));
+            }
+        }
     }
 }
 
