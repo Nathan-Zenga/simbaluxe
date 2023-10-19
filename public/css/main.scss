@@ -1,21 +1,5 @@
 @import "defaults";
 
-$prefixes: -ms- -o- -moz- -webkit- "";
-
-@mixin vendorProp($prop, $value) {
-    @each $p in $prefixes { #{$p + $prop}: $value; }
-}
-
-@mixin vendorValue($prop, $value) {
-    @each $p in $prefixes { #{$prop}: #{$p + $value}; }
-}
-
-@mixin contentCSS() {
-    position: absolute;
-    display: block;
-    content: " ";
-}
-
 body {
     overflow-x: hidden;
 

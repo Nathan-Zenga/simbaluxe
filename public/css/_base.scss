@@ -1,0 +1,24 @@
+@function color-primary   ($alpha: 1) { @return rgba(20, 20, 20, $alpha); }
+@function color-secondary ($alpha: 1) { @return rgba(30, 30, 30, $alpha); }
+@function color-tertiary  ($alpha: 1) { @return rgba(255, 211, 177, $alpha); }
+@function color-accent    ($alpha: 1) { @return rgba(190, 190, 190, $alpha); }
+
+$sm: 576px;
+$md: 768px;
+$lg: 992px;
+
+$prefixes: -ms- -o- -moz- -webkit- "";
+
+@mixin vendorProp($prop, $value) {
+    @each $p in $prefixes { #{$p + $prop}: $value; }
+}
+
+@mixin vendorValue($prop, $value) {
+    @each $p in $prefixes { #{$prop}: #{$p + $value}; }
+}
+
+@mixin contentCSS() {
+    position: absolute;
+    display: block;
+    content: " ";
+}

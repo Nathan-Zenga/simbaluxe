@@ -1,0 +1,49 @@
+@import "base";
+
+#admin-page {
+    .nav-pills {
+        font-weight: 400;
+        overflow: auto;
+        padding-bottom: 5px;
+        @include vendorProp(flex-wrap, nowrap);
+
+        .nav-link {
+            text-wrap: nowrap;
+
+            &.active {
+                background-color: color-tertiary();
+                color: color-primary();
+            }
+        }
+    }
+
+    .remove-form .form-check-sublist .form-check-label {
+        opacity: .5;
+        font-size: .9rem;
+    }
+
+    #home-main-image-current {
+        position: relative;
+        height: 300px;
+        overflow: hidden;
+
+        img {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+
+            &.bg-layer {
+                top: 50%;
+                left: 50%;
+                width: 120%;
+                height: 120%;
+                object-fit: cover;
+                @include vendorProp(filter, blur(30px));
+                @include vendorProp(transform, translate(-50%, -50%));
+                opacity: .5;
+                z-index: 0;
+            }
+        }
+    }
+}
