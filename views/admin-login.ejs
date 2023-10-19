@@ -24,6 +24,8 @@
             }).fail(function(err) {
                 btnControl.finish();
                 Alert(err.responseText);
+            }).always(function() {
+                e.target.reset();
             });
         }).find("#reset-password").click(function(e) {
             e.preventDefault();

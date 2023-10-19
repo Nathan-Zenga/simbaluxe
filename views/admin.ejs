@@ -203,27 +203,30 @@
                         </div>
                     </form>
 
-                    <form action="/shop/product/delete" class="form remove-form">
-                        <div class="form-check mb-3">
-                            <input type="checkbox" class="form-check-input select-all" id="select-all-products">
-                            <label class="form-check-label ml-2" for="select-all-products">Select all</label>
+                    <form action="/shop/product/delete" class="form remove-form" style="max-width: none">
+                        <div class="form-check text-center mb-3">
+                            <input type="checkbox" class="form-check-input select-all-check" id="select-all-products">
+                            <label class="form-check-label" for="select-all-products">Select all</label>
                         </div>
 
-                        <fieldset class="items">
+                        <fieldset class="check-items">
                         <%_ products.forEach((p, i) => { _%>
-                            <div class="form-check mb-3 product-checkbox search-item">
-                                <%_ const input_id = `product-${i+1}` _%>
-                                <input type="checkbox" class="form-check-input" id="<%= input_id %>" name="product_id" value="<%= p.id %>">
-                                <label class="form-check-label ml-2 search-option" for="<%= input_id %>"><%= p.name %></label>
-                            </div>
-                            <div class="form-check-sublist ml-3">
-                            <%_ p.units.forEach((u, j) => { _%>
-                                <div class="form-check mb-3 product-unit-checkbox search-item">
-                                    <%_ const input_child_id = `product-unit-${i+1}-${j+1}` _%>
-                                    <input type="checkbox" class="form-check-input" id="<%= input_child_id %>" name="unit_id" value="<%= u.id %>">
-                                    <label class="form-check-label ml-2 search-option" for="<%= input_child_id %>"><%= u.unit_description %></label>
+                            <div class="check-item text-center mb-5">
+                                <div class="form-check form-check-btn mb-3 search-item">
+                                    <%_ const input_id = `product-${i+1}` _%>
+                                    <input type="checkbox" class="form-check-input" id="<%= input_id %>" name="product_id" value="<%= p.id %>">
+                                    <label class="form-check-label search-option mb-3" for="<%= input_id %>"><%= p.name %></label>
                                 </div>
-                            <%_ }) _%>
+
+                                <div class="check-item-children">
+                                <%_ p.units.forEach((u, j) => { _%>
+                                    <div class="form-check form-check-btn mb-3 small search-item">
+                                        <%_ const input_child_id = `product-unit-${i+1}-${j+1}` _%>
+                                        <input type="checkbox" class="form-check-input" id="<%= input_child_id %>" name="unit_id" value="<%= u.id %>">
+                                        <label class="form-check-label search-option" for="<%= input_child_id %>"><%= u.unit_description %></label>
+                                    </div>
+                                <%_ }) _%>
+                                </div>
                             </div>
                         <%_ }) _%>
                         </fieldset>
@@ -491,12 +494,12 @@
         });
     });
 
-    $(".remove-form input[type=checkbox]").not(".select-all").change(function() {
-        $(this).closest(".form-check").next(".form-check-sublist").find("input[type=checkbox]:visible").prop("checked", this.checked);
+    $(".remove-form .check-item input[type=checkbox]").change(function() {
+        $(this).closest(".form-check").next(".check-item-children").find("input[type=checkbox]:visible").prop("checked", this.checked);
     });
 
-    $(".remove-form .select-all").change(function() {
-        $(this).closest(".remove-form").find(".items input[type=checkbox]").prop("checked", this.checked).change();
+    $(".remove-form .select-all-check").change(function() {
+        $(this).closest(".remove-form").find(".check-items input[type=checkbox]:visible").prop("checked", this.checked).change();
     });
 
     $(".filter-search-input").on("input", function(e) {
@@ -507,6 +510,7 @@
         }).show();
 
         $items.filter(":visible").closest(".form-check-sublist").prev(".search-item").show();
+        $(".remove-form:visible .check-item").show().filter(function() { return !$(this).find(".search-item:visible").length }).hide();
     });
 
     $("#remove_product_images").change(function() {

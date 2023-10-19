@@ -57,14 +57,16 @@ header {
     }
 
     #nav-toggle {
+        font-weight: 300;
+        text-transform: uppercase;
         transition: opacity .4s;
     }
 
-    #nav .link {
+    #nav a {
         font-weight: 300;
         text-transform: uppercase;
 
-        & + .link {
+        & + a {
             margin-left: 25px;
         }
     }
@@ -130,15 +132,14 @@ header {
         text-align: right;
 
         #cart-icon {
-            position: relative;
-            top: -50%;
+            position: absolute;
+            top: -25%;
             right: 15px;
             border-radius: 1000px;
             background-color: color-accent();
             color: color-secondary();
             font-size: 1.2em;
             padding: 10px 9px;
-            @include vendorProp(transform, translateY(25%));
             z-index: 1;
 
             @media (min-width: $sm) {
@@ -850,49 +851,71 @@ fieldset.file-upload-container:disabled {
     }
 }
 
-#admin-page {
-    .nav-pills {
-        font-weight: 400;
-        overflow: auto;
-        padding-bottom: 5px;
-        @include vendorProp(flex-wrap, nowrap);
+.form-check {
+    padding-left: 0;
 
-        .nav-link {
-            text-wrap: nowrap;
+    .form-check-input {
+        margin-left: 0;
+        transition: .2s background-color, .2s color;
 
-            &.active {
-                background-color: color-tertiary();
-                color: color-primary();
+        &.select-all-check {
+            + .form-check-label {
+                font-size: 0;
+
+                &::before {
+                    font-size: 1rem;
+                    content: "Select all";
+                }
+            }
+
+            &:checked + .form-check-label::before {
+                content: "De-select all";
             }
         }
     }
 
-    .remove-form .form-check-sublist .form-check-label {
-        opacity: .5;
-        font-size: .9rem;
+    .form-check-label {
+        margin-left: 1.75rem;
+        vertical-align: middle;
     }
 
-    #home-main-image-current {
-        position: relative;
-        height: 300px;
-        overflow: hidden;
+    &.form-check-btn {
+        display: inline-block;
 
-        img {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
+        .form-check-label {
+            background-color: color-accent(.2);
+            border-radius: 7px;
+            margin-left: 0;
+            padding: .5em .75em;
+            transition: .4s;
+        }
 
-            &.bg-layer {
-                top: 50%;
-                left: 50%;
-                width: 120%;
-                height: 120%;
-                object-fit: cover;
-                @include vendorProp(filter, blur(30px));
-                @include vendorProp(transform, translate(-50%, -50%));
-                opacity: .5;
-                z-index: 0;
+        .form-check-input {
+            margin-left: 10px;
+            margin-top: 10px;
+            opacity: 0;
+            transition: .3s opacity;
+
+            &:checked {
+                opacity: 1;
+
+                + .form-check-label {
+                    background-color: color-tertiary(.2);
+                    color: color-tertiary();
+                    padding-left: 2.3em;
+                }
+            }
+        }
+
+        &:not(:last-child) {
+            margin-right: .5em;
+        }
+
+        &.small .form-check-input {
+            margin-top: 8px;
+
+            &:checked + .form-check-label {
+                padding-left: 2.5em;
             }
         }
     }

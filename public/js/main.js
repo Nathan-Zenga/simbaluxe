@@ -258,7 +258,7 @@ $(function() {
     $(".shop-product-item .toast-toggle").click(function(e) {
         e.preventDefault();
         $(".product-opts-toast").slideUp();
-        $(this).closest(".shop-product-item").find(".product-opts-toast").stop().slideToggle();
+        $(this).closest(".shop-product-item").find(".product-opts-toast").stop(true).slideToggle();
     });
 
     $(document).on("click", ".site-toast .close-btn", function() {

@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const Product = require('../models/Product');
 const isAuthed = require('../modules/auth-check');
+const { max_quantity_option } = require('../config/constants');
 
 router.get('/:product_name', async (req, res, next) => {
     const param = req.params.product_name.trim().replace(/\-|\$/g, "\\W+");
@@ -91,7 +92,7 @@ router.post('/get-price', async (req, res) => {
 
     const { price, unit_stock_qty: stock_qty } = unit;
     var stock_status = "";
-    if (stock_qty < 5) stock_status = `Only ${stock_qty} left`;
+    if (stock_qty < max_quantity_option) stock_status = `Only ${stock_qty} left`;
     if (stock_qty == 0) stock_status = "Out of stock";
     res.send({ price, stock_qty, stock_status });
 });
