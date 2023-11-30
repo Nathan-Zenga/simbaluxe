@@ -1,0 +1,73 @@
+<%- include ('partials/header', { title: "Test", pagename: "grid" }) -%>
+<div class="container-fluid position-relative px-0">
+    <div id="canvas"></div>
+</div>
+
+<script>
+    var coords = [];
+    var $img = $("<div>").addClass("img");
+
+    var randomColor = function() {
+        var r = Math.floor(Math.random() * 255);
+        var g = Math.floor(Math.random() * 255);
+        var b = Math.floor(Math.random() * 255);
+        return `rgb(${r}, ${g}, ${b})`;
+    }
+
+    $("#canvas").click(function(e) {
+        var $canvas = $(this);
+        var parentLeft = $canvas.offset().left;
+        var parentTop = $canvas.offset().top;
+
+        var x = Math.abs(e.pageX - parentLeft);
+        var y = Math.abs(e.pageY - parentTop);
+
+        coords.push({ x, y });
+
+        var pointA = coords[0];
+        var pointB = coords[1];
+
+        var left = ((pointA.x / parseFloat($canvas.css("width"))) * 100) + "%";
+        var top = ((pointA.y / parseFloat($canvas.css("height"))) * 100) + "%";
+
+        var style = "left: " + left + "; " +
+            "top: " + top + "; " +
+            "border: 1px solid white;";
+
+        $img.attr("style", style);
+        $canvas.append($img);
+
+        if (!pointB) return;
+
+        if (pointA.x > pointB.x) {
+            var temp = pointA.x;
+            pointA.x = pointB.x;
+            pointB.x = temp;
+        }
+
+        if (pointA.y > pointB.y) {
+            var temp = pointA.y;
+            pointA.y = pointB.y;
+            pointB.y = temp;
+        }
+
+        var width = Math.abs(pointA.x - pointB.x);
+        var height = Math.abs(pointA.y - pointB.y);
+
+        left = ((pointA.x / parseFloat($canvas.css("width"))) * 100) + "%";
+        top = ((pointA.y / parseFloat($canvas.css("height"))) * 100) + "%";
+        width = ((width / parseFloat($canvas.css("width"))) * 100) + "%";
+        height = ((height / parseFloat($canvas.css("height"))) * 100) + "%";
+
+        style = "left: " + left + "; " +
+            "top: " + top + "; " +
+            "width: " + width + "; " +
+            "height: " + height + "; " +
+            "background-color: " + randomColor() + ";";
+
+        $img.attr("style", style);
+        coords = [];
+        $img = $("<div>").addClass("img");
+    });
+</script>
+<%- include ('partials/footer') -%>

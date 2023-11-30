@@ -66,4 +66,8 @@ router.get('/cloud/resources', async (req, res) => {
     }
 });
 
+router.get('/grid', async (req, res) => {
+    res.render('grid');
+});
+
 module.exports = router;

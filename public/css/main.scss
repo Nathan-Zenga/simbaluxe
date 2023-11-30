@@ -904,3 +904,35 @@ fieldset.file-upload-container:disabled {
         }
     }
 }
+
+#canvas {
+    background-color: rgba(255, 255, 255, .25);
+    margin-bottom: 50px;
+
+    @media (min-width: $sm) {
+        min-height: 80vh;
+        height: 80vh;
+    }
+
+    .img {
+        position: absolute;
+        min-width: 40px;
+        min-height: 40px;
+        transition: filter .5s;
+
+        @media (max-width: $sm) {
+            position: static;
+            top: auto !important;
+            left: auto !important;
+            min-width: none !important;
+            min-height: none !important;
+            width: 100% !important;
+            height: 300px !important;
+            margin-bottom: 3rem;
+        }
+
+        &:hover {
+            @include vendorProp(filter, brightness(1.5));
+        }
+    }
+}
