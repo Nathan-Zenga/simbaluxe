@@ -1,10 +1,13 @@
 <%- include ('partials/header', { title: "Test", pagename: "grid" }) -%>
 <div class="container-fluid position-relative px-0">
-    <div id="canvas"></div>
+    <div id="canvas" class="position-relative">
+        <div id="grid" class="position-relative"></div>
+    </div>
 </div>
 
 <script>
     var coords = [];
+    var cells = [];
     var $img = $("<div>").addClass("img");
 
     var randomColor = function() {
@@ -12,6 +15,16 @@
         var g = Math.floor(Math.random() * 255);
         var b = Math.floor(Math.random() * 255);
         return `rgb(${r}, ${g}, ${b})`;
+    }
+
+    var columnCount = $("#grid").css("grid-template-columns").split(" ").length;
+
+    for (var row = 1; row <= 30; row++) {
+        for (var col = 1; col <= columnCount; col++) {
+            var $cell = $("<div>").addClass("cell");
+            $cell.attr({ "data-row": row, "data-column": col });
+            $("#grid").append($cell);
+        }
     }
 
     $("#canvas").click(function(e) {
@@ -23,50 +36,57 @@
         var y = Math.abs(e.pageY - parentTop);
 
         coords.push({ x, y });
+        cells.push($(".cell:hover"));
 
         var pointA = coords[0];
         var pointB = coords[1];
+        var cellA = cells[0];
+        var cellB = cells[1];
 
-        var left = ((pointA.x / parseFloat($canvas.css("width"))) * 100) + "%";
-        var top = ((pointA.y / parseFloat($canvas.css("height"))) * 100) + "%";
+        pointA.x = Math.min(pointA.x, cellA.prop("offsetLeft"));
+        pointA.y = Math.min(pointA.y, cellA.prop("offsetTop"));
 
-        var style = "left: " + left + "; " +
-            "top: " + top + "; " +
-            "border: 1px solid white;";
+        var imgStyle = $img.prop("style");
+        imgStyle.left = ((pointA.x / parseFloat($canvas.css("width"))) * 100) + "%";
+        imgStyle.top = ((pointA.y / parseFloat($canvas.css("height"))) * 100) + "%";
 
-        $img.attr("style", style);
         $canvas.append($img);
 
-        if (!pointB) return;
+        if (!pointB) return cellA.css("background-color", randomColor());
+
+        pointB.x = Math.max(pointB.x, cellB.prop("offsetLeft") + parseFloat(cellB.css("width")));
+        pointB.y = Math.max(pointB.y, cellB.prop("offsetTop") + parseFloat(cellB.css("height")));
 
         if (pointA.x > pointB.x) {
             var temp = pointA.x;
             pointA.x = pointB.x;
             pointB.x = temp;
+
+            pointA.x -= parseFloat(cellA.css("width"));
+            pointB.x += parseFloat(cellB.css("width"));
         }
 
         if (pointA.y > pointB.y) {
             var temp = pointA.y;
             pointA.y = pointB.y;
             pointB.y = temp;
+
+            pointA.y -= parseFloat(cellA.css("height"));
+            pointB.y += parseFloat(cellB.css("height"));
         }
 
         var width = Math.abs(pointA.x - pointB.x);
         var height = Math.abs(pointA.y - pointB.y);
 
-        left = ((pointA.x / parseFloat($canvas.css("width"))) * 100) + "%";
-        top = ((pointA.y / parseFloat($canvas.css("height"))) * 100) + "%";
-        width = ((width / parseFloat($canvas.css("width"))) * 100) + "%";
-        height = ((height / parseFloat($canvas.css("height"))) * 100) + "%";
+        imgStyle.left = ((pointA.x / parseFloat($canvas.css("width"))) * 100) + "%";
+        imgStyle.top = ((pointA.y / parseFloat($canvas.css("height"))) * 100) + "%";
+        imgStyle.width = ((width / parseFloat($canvas.css("width"))) * 100) + "%";
+        imgStyle.height = ((height / parseFloat($canvas.css("height"))) * 100) + "%";
+        imgStyle.backgroundColor = cellA.css("background-color");
+        cellA.css("background-color", "");
 
-        style = "left: " + left + "; " +
-            "top: " + top + "; " +
-            "width: " + width + "; " +
-            "height: " + height + "; " +
-            "background-color: " + randomColor() + ";";
-
-        $img.attr("style", style);
         coords = [];
+        cells = [];
         $img = $("<div>").addClass("img");
     });
 </script>
