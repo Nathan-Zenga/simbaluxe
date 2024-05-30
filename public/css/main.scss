@@ -583,11 +583,6 @@ button[type=submit].btn.btn-icon-circle {
     font-weight: 400;
 }
 
-#payment-form {
-    margin: 0 auto 50px;
-    max-width: 700px;
-}
-
 $cart-open-shift: 450px;
 
 #cart-panel {
@@ -636,7 +631,6 @@ $cart-open-shift: 450px;
 
     #cart-footer {
         text-align: right;
-        margin-bottom: 2em;
         padding-left: 30px;
         padding-right: 30px;
 
@@ -692,6 +686,8 @@ form {
 }
 
 .form {
+    line-height: 1.5;
+
     input:disabled, textarea:disabled, select:disabled {
         border: none !important;
         background-color: color-accent() !important;

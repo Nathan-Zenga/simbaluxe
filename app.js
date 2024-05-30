@@ -15,6 +15,7 @@ const MailTransporter = require('./modules/mail-transporter');
 const visitor = require('./modules/visitor-info');
 const checkout_cancel = require('./modules/checkout-cancel');
 const paginate = require('./modules/paginate');
+const countries = require("./modules/country-list");
 const { SIMDB, PORT, NODE_ENV, CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET } = process.env;
 const production = NODE_ENV === "production";
 
@@ -57,6 +58,7 @@ app.use(async (req, res, next) => { // global variables
     res.locals.product_sizes = product_sizes;
     res.locals.subject_options = subject_options;
     res.locals.max_quantity_option = max_quantity_option;
+    res.locals.countries = countries;
     res.locals.site_content = await SiteContent.findOne();
     next();
 });

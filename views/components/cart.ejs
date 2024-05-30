@@ -49,9 +49,9 @@
     </div>
 
     <%_ if (cart.length) { _%>
-    <div id="cart-footer">
+    <div id="cart-footer" class="mb-sm-0 mb-5">
         <p id="price-total">Total: <span>£<%= price_total().toFixed(2) %></span></p>
-        <p><a id="checkout-link" class="btn btn-theme" href="/shop/checkout" role="button">Checkout</a></p>
+        <button id="checkout-link" class="btn btn-theme" type="button" data-target="#checkout-carousel" data-slide-to="1">Checkout</button>
     </div>
     <%_ } _%>
 </div>

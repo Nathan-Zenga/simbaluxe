@@ -9,11 +9,6 @@ const countries = require("../modules/country-list");
 const { each } = require('async');
 const timeout = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-router.get('/', async (req, res) => {
-    if (!req.session.cart.length) return res.redirect(req.get("referrer"));
-    res.render("checkout", { countries })
-});
-
 router.post("/session/create", async (req, res) => {
     const { firstname, lastname, email, address_l1, address_l2, city, state, country: country_name, postcode } = req.body;
     if (!req.session.cart.length) return res.status(400).send("Cannot continue checkout:\nyour cart is empty");

@@ -1,0 +1,52 @@
+#admin-page .nav-pills {
+  font-weight: 400;
+  overflow: auto;
+  padding-bottom: 5px;
+  -ms-flex-wrap: nowrap;
+  -o-flex-wrap: nowrap;
+  -moz-flex-wrap: nowrap;
+  -webkit-flex-wrap: nowrap;
+  flex-wrap: nowrap;
+}
+#admin-page .nav-pills .nav-link {
+  text-wrap: nowrap;
+}
+#admin-page .nav-pills .nav-link.active {
+  background-color: rgb(255, 211, 177);
+  color: rgb(20, 20, 20);
+}
+#admin-page .remove-form .form-check-sublist .form-check-label {
+  opacity: 0.5;
+  font-size: 0.9rem;
+}
+#admin-page #home-main-image-current {
+  position: relative;
+  height: 300px;
+  overflow: hidden;
+}
+#admin-page #home-main-image-current img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+#admin-page #home-main-image-current img.bg-layer {
+  top: 50%;
+  left: 50%;
+  width: 120%;
+  height: 120%;
+  object-fit: cover;
+  -ms-filter: blur(30px);
+  -o-filter: blur(30px);
+  -moz-filter: blur(30px);
+  -webkit-filter: blur(30px);
+  filter: blur(30px);
+  -ms-transform: translate(-50%, -50%);
+  -o-transform: translate(-50%, -50%);
+  -moz-transform: translate(-50%, -50%);
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  opacity: 0.5;
+  z-index: 0;
+}
+/*# sourceMappingURL=admin.css.map */
